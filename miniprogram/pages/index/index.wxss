@@ -1,0 +1,519 @@
+/* =========================================================== */
+/* 渠道列表首页样式                                            */
+/* =========================================================== */
+
+/* ---- 页面容器：上下结构撑满全屏 ---- */
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+/* =========================================================== */
+/* 1. 顶部工具栏                                               */
+/* =========================================================== */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 20rpx;
+  background: #fff;
+  gap: 16rpx;
+}
+
+/* 搜索框：灰底胶囊形 */
+.search-box {
+  flex: 1;
+  height: 72rpx;
+  background: #f5f5f5;
+  border-radius: 36rpx;
+  padding: 0 28rpx;
+  display: flex;
+  align-items: center;
+}
+
+.search-box-input {
+  width: 100%;
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 操作按钮组 */
+.toolbar-btns {
+  display: flex;
+  gap: 12rpx;
+  flex-shrink: 0;  /* 不压缩，确保按钮完整显示 */
+}
+
+/* 新增按钮：绿色 */
+.btn-add {
+  height: 60rpx;
+  line-height: 60rpx;
+  padding: 0 24rpx;
+  background: #07c160;
+  color: #fff;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+}
+
+/* 导出按钮：蓝色 */
+.btn-export {
+  height: 60rpx;
+  line-height: 60rpx;
+  padding: 0 24rpx;
+  background: #1989fa;
+  color: #fff;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+}
+
+/* =========================================================== */
+/* 筛选与排序栏                                               */
+/* =========================================================== */
+
+.filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  padding: 16rpx 20rpx;
+  background: #fff;
+  border-top: 2rpx solid #eee;
+}
+
+.filter-search {
+  width: 100%;
+  height: 64rpx;
+  background: #f5f5f5;
+  border-radius: 32rpx;
+  padding: 0 28rpx;
+  font-size: 26rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.filter-scroll {
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.filter-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-tab {
+  display: inline-flex;
+  align-items: center;
+  height: 56rpx;
+  padding: 0 24rpx;
+  margin-right: 10rpx;
+  background: #f5f5f5;
+  border-radius: 28rpx;
+  font-size: 24rpx;
+  color: #666;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.filter-tab.active {
+  background: #07c160;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* =========================================================== */
+/* 3. 滚动列表区域                                             */
+/* =========================================================== */
+
+.list-scroll {
+  flex: 1;              /* 占满剩余高度 */
+  overflow-y: auto;      /* 允许纵向滚动 */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* =========================================================== */
+/* 4. 省份分组                                               */
+/* =========================================================== */
+
+.group {
+  margin: 20rpx 20rpx 0;
+}
+
+/* 组标题：左侧绿色竖条装饰 */
+.group-title {
+  display: flex;
+  align-items: center;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+  padding: 12rpx 0;
+  border-left: 6rpx solid #07c160;
+  padding-left: 16rpx;
+  margin-bottom: 12rpx;
+}
+
+/* 组内记录数 */
+.group-count {
+  font-size: 24rpx;
+  color: #999;
+  font-weight: 400;
+  margin-left: 12rpx;
+}
+
+/* =========================================================== */
+/* 5. 渠道卡片                                                 */
+/* =========================================================== */
+
+.card {
+  background: #fff;
+  border-radius: 12rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04); /* 浅阴影 */
+  overflow: hidden;
+}
+
+/* ---- 卡片顶部：省份·城市 + 序号 ---- */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 24rpx 0;
+}
+
+.card-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 序号徽标：灰底圆角 */
+.card-sn {
+  font-size: 26rpx;
+  color: #999;
+  background: #f5f5f5;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+/* ---- 卡片中部：信息行 ---- */
+.card-body {
+  padding: 16rpx 24rpx 12rpx;
+}
+
+/* 每一行信息 */
+.info-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+/* 字段标签（灰色） */
+.info-label {
+  color: #999;
+  flex-shrink: 0;
+  width: 4.5em;
+}
+
+/* 字段值 */
+.info-value {
+  color: #333;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 电话值（蓝色突出） */
+.info-value.phone {
+  color: #1989fa;
+}
+
+/* 内联复制按钮 */
+.copy-btn-sm {
+  flex-shrink: 0;
+  height: 48rpx;
+  line-height: 48rpx;
+  padding: 0 18rpx;
+  background: #ecf5ff;  /* 浅蓝底 */
+  color: #1989fa;        /* 蓝色字 */
+  border-radius: 6rpx;
+  font-size: 24rpx;
+  margin-left: 12rpx;
+}
+
+/* =========================================================== */
+/* 6. 操作栏                                                 */
+/* =========================================================== */
+
+.action-bar {
+  display: flex;
+  padding: 10rpx 16rpx 14rpx;
+  gap: 8rpx;
+}
+
+/* 操作按钮：均分宽度 */
+.action-btn {
+  flex: 1;
+  height: 58rpx;
+  line-height: 58rpx;
+  text-align: center;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  padding: 0;
+  background: #f7f7f7;
+  color: #666;
+}
+
+/* 点赞高亮状态：红色 */
+.action-btn.liked {
+  background: #fef0f0;
+  color: #e64340;
+}
+
+/* 删除按钮：红色 */
+.btn-delete {
+  background: #fef0f0;
+  color: #e64340;
+}
+
+/* =========================================================== */
+/* 7. 展开区域（评论 / 促销员）                                */
+/* =========================================================== */
+
+.section {
+  padding: 0 24rpx 20rpx;
+}
+
+/* 分割线 */
+.section-divider {
+  height: 2rpx;
+  background: #f0f0f0;
+  margin-bottom: 16rpx;
+}
+
+/* 区域标题 */
+.section-title {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 12rpx;
+}
+
+/* 空提示文字 */
+.empty-tip {
+  font-size: 24rpx;
+  color: #ccc;
+  text-align: center;
+  padding: 16rpx 0;
+}
+
+/* =========================================================== */
+/* 8. 评论相关                                                 */
+/* =========================================================== */
+
+/* 单条评论 */
+.comment-item {
+  padding: 10rpx 0;
+  border-bottom: 2rpx solid #f5f5f5;
+}
+
+.comment-item:last-child {
+  border-bottom: none;  /* 最后一条不显示底部分割线 */
+}
+
+/* 评论头部：昵称 + 时间 + 删除按钮 */
+.comment-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 4rpx;
+}
+
+/* 昵称（绿色） */
+.comment-nickname {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #07c160;
+}
+
+/* 时间（浅灰） */
+.comment-time {
+  font-size: 20rpx;
+  color: #bbb;
+  flex: 1;
+}
+
+/* 删除评论按钮 */
+.comment-del {
+  flex-shrink: 0;
+  width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  text-align: center;
+  background: transparent;
+  color: #ccc;
+  font-size: 22rpx;
+  padding: 0;
+}
+
+/* 快捷评论标签 */
+.quick-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 14rpx;
+}
+
+.quick-tag {
+  height: 52rpx;
+  line-height: 52rpx;
+  padding: 0 20rpx;
+  background: #ebf9f1;
+  color: #07c160;
+  border-radius: 26rpx;
+  font-size: 22rpx;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.quick-tag:active {
+  opacity: 0.7;
+}
+
+/* 评论内容 */
+.comment-content {
+  font-size: 26rpx;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* 评论输入区域 */
+.comment-input-area {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 14rpx;
+  align-items: center;
+}
+
+/* 评论输入框：胶囊形 */
+.comment-input {
+  flex: 1;
+  height: 64rpx;
+  background: #f5f5f5;
+  border-radius: 32rpx;
+  padding: 0 24rpx;
+  font-size: 26rpx;
+  color: #333;
+}
+
+/* 发送按钮：绿色 */
+.send-btn {
+  flex-shrink: 0;
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 28rpx;
+  background: #07c160;
+  color: #fff;
+  border-radius: 32rpx;
+  font-size: 26rpx;
+}
+
+/* =========================================================== */
+/* 9. 促销员相关                                               */
+/* =========================================================== */
+
+/* 促销员列表项 */
+.promoter-item {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 2rpx solid #f5f5f5;
+  gap: 12rpx;
+}
+
+.promoter-item:last-child {
+  border-bottom: none;
+}
+
+/* 姓名（加粗） */
+.promoter-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 电话（灰色） */
+.promoter-phone {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* 删除促销员按钮 */
+.promoter-del {
+  margin-left: auto;     /* 推至最右 */
+  flex-shrink: 0;
+  width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  text-align: center;
+  background: transparent;
+  color: #ccc;
+  font-size: 22rpx;
+  padding: 0;
+}
+
+/* 添加促销员表单 */
+.promoter-form {
+  display: flex;
+  gap: 10rpx;
+  margin-top: 14rpx;
+  align-items: center;
+}
+
+/* 输入框 */
+.promoter-input {
+  flex: 1;
+  height: 60rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  padding: 0 16rpx;
+  font-size: 26rpx;
+  color: #333;
+  min-width: 0;
+}
+
+/* 电话输入框稍微宽一点 */
+.promoter-input.phone {
+  flex: 1.2;
+}
+
+/* 添加按钮：绿色 */
+.add-promoter-btn {
+  flex-shrink: 0;
+  height: 60rpx;
+  line-height: 60rpx;
+  padding: 0 24rpx;
+  background: #07c160;
+  color: #fff;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+}
+
+/* =========================================================== */
+/* 10. 加载状态 & 空状态                                      */
+/* =========================================================== */
+
+.loading,
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 0;
+  font-size: 28rpx;
+  color: #999;
+}

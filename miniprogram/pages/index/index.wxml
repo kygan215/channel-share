@@ -1,0 +1,228 @@
+<view class="page">
+
+  <!-- ==================== 顶部工具栏 ==================== -->
+  <view class="toolbar">
+    <view class="search-box">
+      <input
+        class="search-box-input"
+        placeholder="搜索省份/城市/电话"
+        value="{{searchText}}"
+        bindinput="onSearchInput"
+        confirm-type="search"
+      />
+    </view>
+    <view class="toolbar-btns">
+      <button class="btn-add" bindtap="goToAdd">新增</button>
+      <button class="btn-export" bindtap="exportData">导出</button>
+    </view>
+  </view>
+
+  <!-- ==================== 筛选与排序栏 ==================== -->
+  <view class="filter-bar">
+    <input
+      class="filter-search"
+      placeholder="搜索省份快速筛选"
+      value="{{filterSearchText}}"
+      bindinput="onFilterSearch"
+    />
+    <scroll-view class="filter-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+      <view
+        wx:for="{{displayProvinces}}"
+        wx:key="*this"
+        class="filter-tab {{selectedProvince === item ? 'active' : ''}}"
+        data-value="{{item}}"
+        bindtap="onProvinceTabTap"
+      >
+        {{item}}
+      </view>
+    </scroll-view>
+    <scroll-view class="filter-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+      <view
+        wx:for="{{sortOptions}}"
+        wx:key="*this"
+        class="filter-tab {{sortIndex === index ? 'active' : ''}}"
+        data-index="{{index}}"
+        bindtap="onSortTabTap"
+      >
+        {{item}}
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ==================== 加载状态 ==================== -->
+  <view wx:if="{{loading}}" class="loading">
+    <text>加载中...</text>
+  </view>
+
+  <!-- ==================== 列表内容 ==================== -->
+  <scroll-view scroll-y class="list-scroll" wx:else>
+
+    <view wx:for="{{groupedData}}" wx:key="province" class="group">
+
+      <view class="group-title">
+        <text>{{item.province}}</text>
+        <text class="group-count">{{item.items.length}}条</text>
+      </view>
+
+      <view wx:for="{{item.items}}" wx:for-item="sub" wx:key="id" class="card">
+
+        <view class="card-header">
+          <text class="card-title">{{sub.province}} · {{sub.city}}</text>
+          <text class="card-sn">#{{sub.sn}}</text>
+        </view>
+
+        <view class="card-body">
+
+          <view wx:if="{{sub.district}}" class="info-row">
+            <text class="info-label">区/镇</text>
+            <text class="info-value">{{sub.district}}</text>
+          </view>
+
+          <view wx:if="{{sub.street}}" class="info-row">
+            <text class="info-label">乡/县/镇</text>
+            <text class="info-value">{{sub.street}}</text>
+          </view>
+
+          <view class="info-row">
+            <text class="info-label">电话</text>
+            <text class="info-value phone">{{sub.phone}}</text>
+            <button class="copy-btn-sm" data-phone="{{sub.phone}}" bindtap="copyPhone">复制</button>
+          </view>
+
+          <view wx:if="{{sub.wechat}}" class="info-row">
+            <text class="info-label">微信号</text>
+            <text class="info-value">{{sub.wechat}}</text>
+            <button class="copy-btn-sm" data-wechat="{{sub.wechat}}" bindtap="copyWechat">复制</button>
+          </view>
+
+        </view>
+
+        <view class="action-bar">
+          <button
+            class="action-btn {{sub._liked ? 'liked' : ''}}"
+            data-id="{{sub.id}}"
+            bindtap="toggleLike"
+          >👍 {{sub.likes.length}}</button>
+
+          <button
+            class="action-btn"
+            data-id="{{sub.id}}"
+            bindtap="toggleComments"
+          >💬 {{sub.comments.length}}</button>
+
+          <button
+            class="action-btn"
+            data-id="{{sub.id}}"
+            bindtap="togglePromoters"
+          >👤 {{sub.promoters.length}}</button>
+
+          <button
+            class="action-btn btn-delete"
+            data-id="{{sub.id}}"
+            bindtap="deleteItem"
+          >删除</button>
+        </view>
+
+        <!-- ============ 评论区域 ============ -->
+        <view wx:if="{{expandedComments[sub.id]}}" class="section">
+          <view class="section-divider"></view>
+          <view class="section-title">评论</view>
+
+          <view wx:if="{{sub.comments.length === 0}}" class="empty-tip">暂无评论</view>
+
+          <view wx:for="{{sub.comments}}" wx:for-item="c" wx:key="id" class="comment-item">
+            <view class="comment-header">
+              <text class="comment-nickname">{{c.nickname}}</text>
+              <text class="comment-time">{{c.time}}</text>
+              <button
+                wx:if="{{c.userId === currentUserId}}"
+                class="comment-del"
+                data-channel-id="{{sub.id}}"
+                data-comment-id="{{c.id}}"
+                bindtap="deleteComment"
+              >✕</button>
+            </view>
+            <view class="comment-content">{{c.content}}</view>
+          </view>
+
+          <!-- 快捷评论标签 -->
+          <view class="quick-tags">
+            <view
+              wx:for="{{quickTags}}"
+              wx:key="*this"
+              class="quick-tag"
+              data-channel-id="{{sub.id}}"
+              data-tag="{{item}}"
+              bindtap="onQuickTagTap"
+            >
+              {{item}}
+            </view>
+          </view>
+
+          <!-- 评论输入区 -->
+          <view class="comment-input-area">
+            <input
+              class="comment-input"
+              placeholder="输入评论..."
+              value="{{commentTexts[sub.id] || ''}}"
+              data-channel-id="{{sub.id}}"
+              bindinput="onCommentInput"
+            />
+            <button
+              class="send-btn"
+              data-channel-id="{{sub.id}}"
+              bindtap="addComment"
+            >发送</button>
+          </view>
+        </view>
+
+        <!-- ============ 促销员区域 ============ -->
+        <view wx:if="{{expandedPromoters[sub.id]}}" class="section">
+          <view class="section-divider"></view>
+          <view class="section-title">促销员</view>
+
+          <view wx:if="{{sub.promoters.length === 0}}" class="empty-tip">暂无促销员</view>
+
+          <view wx:for="{{sub.promoters}}" wx:for-item="p" wx:key="id" class="promoter-item">
+            <text class="promoter-name">{{p.name}}</text>
+            <text wx:if="{{p.phone}}" class="promoter-phone">{{p.phone}}</text>
+            <button
+              class="promoter-del"
+              data-channel-id="{{sub.id}}"
+              data-promoter-id="{{p.id}}"
+              bindtap="deletePromoter"
+            >✕</button>
+          </view>
+
+          <view class="promoter-form">
+            <input
+              class="promoter-input"
+              placeholder="姓名"
+              value="{{promoterNames[sub.id] || ''}}"
+              data-channel-id="{{sub.id}}"
+              bindinput="onPromoterNameInput"
+            />
+            <input
+              class="promoter-input phone"
+              placeholder="电话(选填)"
+              value="{{promoterPhones[sub.id] || ''}}"
+              data-channel-id="{{sub.id}}"
+              bindinput="onPromoterPhoneInput"
+            />
+            <button
+              class="add-promoter-btn"
+              data-channel-id="{{sub.id}}"
+              bindtap="addPromoter"
+            >添加</button>
+          </view>
+        </view>
+
+      </view>
+    </view>
+
+    <view wx:if="{{groupedData.length === 0}}" class="empty">
+      <text>暂无数据</text>
+    </view>
+
+  </scroll-view>
+</view>

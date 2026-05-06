@@ -1,0 +1,168 @@
+/* =========================================================== */
+/* 新增渠道页面样式                                            */
+/* =========================================================== */
+
+/* 页面容器：内边距 + 淡灰背景 + 铺满屏幕 */
+.page {
+  padding: 24rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 白色表单卡片 */
+.form {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+}
+
+/* 表单项容器：下边距分隔 */
+.form-item {
+  margin-bottom: 28rpx;
+}
+
+/* 双列布局 */
+.form-row {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 28rpx;
+}
+
+.form-half {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 字段标签 */
+.label {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+/* 必填红色星号 */
+.required {
+  color: #e64340;
+}
+
+/* =========================================================== */
+/* picker 下拉选择器样式                                        */
+/* =========================================================== */
+
+/* 选择器显示框：灰底圆角 */
+.picker-value {
+  width: 100%;
+  height: 80rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  line-height: 80rpx;
+  box-sizing: border-box;
+  /* 文字太长时省略号截断 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 未选中状态下的占位文字（浅灰色） */
+.picker-value.placeholder {
+  color: #bbb;
+}
+
+/* =========================================================== */
+/* 选项横向滚动 Tab                                             */
+/* =========================================================== */
+
+.tab-scroll {
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  overflow-x: auto;
+  padding: 8rpx 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-item {
+  display: inline-flex;
+  align-items: center;
+  height: 64rpx;
+  padding: 0 28rpx;
+  margin-right: 12rpx;
+  background: #f5f5f5;
+  border-radius: 32rpx;
+  font-size: 26rpx;
+  color: #666;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tab-item.active {
+  background: #07c160;
+  color: #fff;
+  font-weight: 500;
+}
+
+.tab-item.placeholder {
+  color: #bbb;
+  background: #f5f5f5;
+}
+
+/* =========================================================== */
+/* 搜索输入框                                                  */
+/* =========================================================== */
+
+.search-input {
+  width: 100%;
+  height: 72rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  padding: 0 24rpx;
+  font-size: 26rpx;
+  color: #333;
+  box-sizing: border-box;
+  margin-bottom: 8rpx;
+}
+
+/* =========================================================== */
+/* 文本输入框                                                  */
+/* =========================================================== */
+
+.text-input {
+  width: 100%;
+  height: 80rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+/* =========================================================== */
+/* 提交按钮                                                    */
+/* =========================================================== */
+
+.submit-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: #07c160;   /* 微信绿 */
+  color: #fff;
+  border-radius: 44rpx;  /* 胶囊圆角 */
+  font-size: 32rpx;
+  margin-top: 48rpx;
+  text-align: center;
+}
+
+/* 提交中状态：半透明禁用 */
+.submit-btn[disabled] {
+  opacity: 0.6;
+}

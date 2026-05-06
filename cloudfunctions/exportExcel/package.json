@@ -1,0 +1,13 @@
+{
+  "name": "exportExcel",
+  "version": "1.0.0",
+  "description": "导出渠道信息到Excel",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "~2.4.0",
+    "node-xlsx": "^0.21.0"
+  }
+}

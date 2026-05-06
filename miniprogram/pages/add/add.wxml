@@ -1,0 +1,137 @@
+<view class="page">
+  <view class="form">
+
+    <!-- ========== 第一行：省份 | 城市 ========== -->
+    <view class="form-row">
+
+      <!-- 省份：搜索 + 滚动选择 -->
+      <view class="form-half">
+        <text class="label">
+          省份
+          <text class="required">*</text>
+        </text>
+        <input
+          class="search-input"
+          placeholder="搜索省份"
+          value="{{provinceSearchText}}"
+          bindinput="onProvinceSearch"
+        />
+        <scroll-view class="tab-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+          <view
+            wx:for="{{filteredProvinceList}}"
+            wx:key="*this"
+            class="tab-item {{province === item ? 'active' : ''}}"
+            data-value="{{item}}"
+            bindtap="onProvinceTabTap"
+          >
+            {{item}}
+          </view>
+          <view wx:if="{{filteredProvinceList.length === 0}}" class="tab-item placeholder">无匹配</view>
+        </scroll-view>
+      </view>
+
+      <!-- 城市：搜索 + 滚动选择（依赖省份） -->
+      <view class="form-half">
+        <text class="label">
+          城市
+          <text class="required">*</text>
+        </text>
+        <input
+          class="search-input"
+          placeholder="搜索城市"
+          value="{{citySearchText}}"
+          bindinput="onCitySearch"
+        />
+        <scroll-view class="tab-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+          <view
+            wx:for="{{filteredCityList}}"
+            wx:key="*this"
+            class="tab-item {{city === item ? 'active' : ''}}"
+            data-value="{{item}}"
+            bindtap="onCityTabTap"
+          >
+            {{item}}
+          </view>
+          <view wx:if="{{filteredCityList.length === 0}}" class="tab-item placeholder">请先选择省份</view>
+        </scroll-view>
+      </view>
+
+    </view>
+
+    <!-- ========== 第二行：区/镇 | 乡/县/镇 ========== -->
+    <view class="form-row">
+
+      <!-- 区/镇：搜索 + 滚动选择（必填，依赖城市） -->
+      <view class="form-half">
+        <text class="label">
+          区/镇
+          <text class="required">*</text>
+        </text>
+        <input
+          class="search-input"
+          placeholder="搜索区/镇"
+          value="{{districtSearchText}}"
+          bindinput="onDistrictSearch"
+        />
+        <scroll-view class="tab-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+          <view
+            wx:for="{{filteredDistrictList}}"
+            wx:key="*this"
+            class="tab-item {{district === item ? 'active' : ''}}"
+            data-value="{{item}}"
+            bindtap="onDistrictTabTap"
+          >
+            {{item}}
+          </view>
+          <view wx:if="{{filteredDistrictList.length === 0}}" class="tab-item placeholder">请先选择城市</view>
+        </scroll-view>
+      </view>
+
+      <!-- 乡/县/镇：手动输入（选填） -->
+      <view class="form-half">
+        <text class="label">乡/县/镇</text>
+        <input
+          class="text-input"
+          placeholder="请输入"
+          value="{{street}}"
+          data-field="street"
+          bindinput="onInput"
+        />
+      </view>
+
+    </view>
+
+    <!-- ========== 电话：手动输入 ========== -->
+    <view class="form-item">
+      <text class="label">电话</text>
+      <input
+        class="text-input"
+        placeholder="请输入电话"
+        type="number"
+        value="{{phone}}"
+        data-field="phone"
+        bindinput="onInput"
+        maxlength="20"
+      />
+    </view>
+
+    <!-- ========== 微信：手动输入 ========== -->
+    <view class="form-item">
+      <text class="label">微信号</text>
+      <input
+        class="text-input"
+        placeholder="请输入微信号"
+        value="{{wechat}}"
+        data-field="wechat"
+        bindinput="onInput"
+      />
+    </view>
+
+    <!-- ========== 提交按钮 ========== -->
+    <button class="submit-btn" bindtap="submit" disabled="{{submitting}}">
+      <text wx:if="{{submitting}}">提交中...</text>
+      <text wx:else>提交</text>
+    </button>
+
+  </view>
+</view>
