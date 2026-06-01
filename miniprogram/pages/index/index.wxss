@@ -1,53 +1,52 @@
 /* =========================================================== */
-/* 首页 - 品牌感设计                                            */
+/* 首页 - 全新品牌化设计                                        */
 /* =========================================================== */
 
 .page {
-  padding: 0 0 40rpx;
+  padding: 0;
   min-height: 100vh;
   box-sizing: border-box;
+  background: var(--gray-1);
 }
 
 /* =========================================================== */
-/* 1. 顶部品牌区                                               */
+/* 1. 顶部品牌区                                                */
 /* =========================================================== */
 
 .hero {
   position: relative;
   background: linear-gradient(135deg, #07c160 0%, #06ad56 40%, #059e4e 100%);
-  padding: 48rpx 32rpx 56rpx;
+  padding: 56rpx 32rpx 0;
   overflow: hidden;
+  min-height: 260rpx;
 }
 
 .hero-bg-pattern {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none;
 }
 
 .hero-bg-pattern::before {
   content: '';
   position: absolute;
-  top: -120rpx;
-  right: -60rpx;
-  width: 400rpx;
-  height: 400rpx;
+  top: -160rpx;
+  right: -80rpx;
+  width: 500rpx;
+  height: 500rpx;
   border-radius: 50%;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .hero-bg-pattern::after {
   content: '';
   position: absolute;
-  bottom: -160rpx;
-  left: -80rpx;
-  width: 500rpx;
-  height: 500rpx;
+  bottom: -200rpx;
+  left: -100rpx;
+  width: 600rpx;
+  height: 600rpx;
   border-radius: 50%;
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .hero-content {
@@ -56,6 +55,7 @@
   justify-content: space-between;
   position: relative;
   z-index: 1;
+  padding-bottom: 60rpx;
 }
 
 .hero-brand {
@@ -67,207 +67,261 @@
 .hero-logo {
   width: 88rpx;
   height: 88rpx;
-  border-radius: 20rpx;
-  background: rgba(255,255,255,0.95);
+  border-radius: 22rpx;
+  background: rgba(255, 255, 255, 0.95);
   padding: 8rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.1);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
 }
 
 .hero-text-group {
   display: flex;
   flex-direction: column;
-  gap: 4rpx;
+  gap: 8rpx;
 }
 
 .hero-title {
-  font-size: 40rpx;
+  font-size: 44rpx;
   font-weight: 800;
   color: #fff;
-  letter-spacing: 1rpx;
+  letter-spacing: 2rpx;
+  line-height: 1.1;
 }
 
 .hero-desc {
   font-size: 22rpx;
-  color: rgba(255,255,255,0.75);
-  letter-spacing: 0.5rpx;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 4rpx;
 }
 
 .hero-export-btn {
   display: flex;
   align-items: center;
-  gap: 6rpx;
-  padding: 14rpx 24rpx;
-  background: rgba(255,255,255,0.2);
+  gap: 8rpx;
+  padding: 14rpx 28rpx;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-round);
   flex-shrink: 0;
-  margin-top: 8rpx;
-  border: 1rpx solid rgba(255,255,255,0.15);
+  margin-top: 12rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10rpx);
 }
+
 .hero-export-btn:active {
-  background: rgba(255,255,255,0.35);
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(0.95);
 }
+
 .hero-export-icon {
   font-size: 24rpx;
 }
+
 .hero-export-text {
   font-size: 22rpx;
   color: #fff;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-
-/* =========================================================== */
-/* 2. 数据概览栏                                               */
-/* =========================================================== */
-
-.stats-bar {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  margin: -36rpx 28rpx 0;
-  border-radius: 24rpx;
-  padding: 28rpx 8rpx;
-  box-shadow: 0 8rpx 32rpx rgba(7, 193, 96, 0.12);
+/* 波浪分割 */
+.hero-wave {
   position: relative;
   z-index: 2;
+  height: 60rpx;
+  margin-top: -2rpx;
 }
 
-.stat-item {
-  flex: 1;
+.hero-wave svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* =========================================================== */
+/* 2. 数据概览 — 4个彩色统计卡片                                 */
+/* =========================================================== */
+
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+  padding: 0 24rpx;
+  margin-top: -10rpx;
+  position: relative;
+  z-index: 3;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 24rpx 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.2s;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-card:active {
+  transform: scale(0.96);
+}
+
+/* 左侧彩色装饰条 */
+.stat-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6rpx;
+  border-radius: 0 4rpx 4rpx 0;
+}
+
+.stat-card-total::before { background: #07c160; }
+.stat-card-hired::before { background: #1989fa; }
+.stat-card-quality::before { background: #ff976a; }
+.stat-card-provinces::before { background: #a855f7; }
+
+.stat-card-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.stat-icon {
+  font-size: 36rpx;
+  margin-bottom: 4rpx;
 }
 
 .stat-value {
-  font-size: 40rpx;
+  font-size: 44rpx;
   font-weight: 800;
   color: var(--gray-8);
+  line-height: 1.1;
 }
 
 .stat-label {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: var(--gray-5);
   font-weight: 500;
 }
 
-.stat-divider {
-  width: 2rpx;
-  height: 52rpx;
-  background: var(--gray-3);
-}
-
-
 /* =========================================================== */
-/* 3. 功能菜单网格                                             */
+/* 3. 分区标题                                                  */
 /* =========================================================== */
 
-.menu-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 28rpx;
-  padding: 36rpx 28rpx 0;
-}
-
-.menu-card {
-  background: #fff;
-  border-radius: 28rpx;
-  padding: 44rpx 28rpx;
+.section-label {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+  padding: 36rpx 28rpx 16rpx;
+}
+
+.section-label-icon {
+  font-size: 28rpx;
+}
+
+.section-label-text {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: var(--gray-8);
+  letter-spacing: 1rpx;
+}
+
+/* =========================================================== */
+/* 4. 快捷操作 — 功能卡片                                       */
+/* =========================================================== */
+
+.action-row {
+  display: flex;
+  gap: 16rpx;
+  padding: 0 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.action-card {
+  flex: 1;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 24rpx 22rpx;
+  display: flex;
   align-items: center;
   gap: 16rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
   border: 2rpx solid var(--gray-2);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  animation: cardIn 0.5s ease-out both;
+  transition: all 0.2s;
+  min-height: 100rpx;
 }
 
-/* 卡片入场动画 */
-.menu-card:nth-child(1) { animation-delay: 0.05s; }
-.menu-card:nth-child(2) { animation-delay: 0.12s; }
-.menu-card:nth-child(3) { animation-delay: 0.19s; }
-.menu-card:nth-child(4) { animation-delay: 0.26s; }
-
-@keyframes cardIn {
-  from { opacity: 0; transform: translateY(30rpx); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.menu-card:active {
+.action-card:active {
   transform: scale(0.96);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  border-color: var(--primary-light);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
-/* 卡片顶部装饰条 */
-.menu-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 70rpx;
-  height: 6rpx;
-  border-radius: 0 0 8rpx 8rpx;
-}
-
-.menu-card:nth-child(1)::before { background: var(--primary); }
-.menu-card:nth-child(2)::before { background: #1989fa; }
-.menu-card:nth-child(3)::before { background: #a855f7; }
-.menu-card:nth-child(4)::before { background: #ff976a; }
-
-.menu-card-icon {
-  width: 112rpx;
-  height: 112rpx;
-  border-radius: 28rpx;
+.action-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 18rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 52rpx;
-  box-shadow: 0 6rpx 20rpx rgba(0,0,0,0.06);
-  transition: all 0.3s;
+  font-size: 36rpx;
+  flex-shrink: 0;
 }
 
-.icon-query {
+.action-card-query .action-icon-wrap {
   background: linear-gradient(135deg, #ebf9f1, #d4f5e3);
 }
-.icon-add {
+.action-card-add .action-icon-wrap {
   background: linear-gradient(135deg, #e8f5ff, #d0edff);
 }
-.icon-import {
+.action-card-import .action-icon-wrap {
   background: linear-gradient(135deg, #f3e8ff, #e8d5ff);
 }
-.icon-manage {
+.action-card-manage .action-icon-wrap {
   background: linear-gradient(135deg, #fff3e0, #ffe8cc);
 }
 
-.menu-card-title {
-  font-size: 32rpx;
+.action-icon {
+  font-size: 36rpx;
+}
+
+.action-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+.action-title {
+  font-size: var(--font-lg);
   font-weight: 700;
   color: var(--gray-8);
 }
 
-.menu-card-desc {
-  font-size: 22rpx;
+.action-desc {
+  font-size: 20rpx;
   color: var(--gray-5);
-  text-align: center;
-  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+.action-arrow {
+  font-size: 32rpx;
+  color: var(--gray-4);
+  flex-shrink: 0;
+}
 
 /* =========================================================== */
-/* 4. 隐私协议弹窗                                             */
+/* 5. 隐私协议弹窗                                              */
 /* =========================================================== */
 
 .privacy-mask {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0, 0, 0, 0.55);
   z-index: 9999;
   display: flex;
@@ -431,17 +485,13 @@
   transform: scale(0.97);
 }
 
-
 /* =========================================================== */
-/* 5. 权限验证门（访问受限）                                    */
+/* 6. 权限验证门                                                */
 /* =========================================================== */
 
 .auth-gate {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: var(--gray-1);
   z-index: 9999;
   display: flex;

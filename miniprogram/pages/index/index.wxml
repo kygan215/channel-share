@@ -8,7 +8,7 @@
         <image class="hero-logo" src="/images/logo.png" mode="aspectFit" />
         <view class="hero-text-group">
           <text class="hero-title">促销信息共享</text>
-          <text class="hero-desc">销售团队促销管理平台</text>
+          <text class="hero-desc">高效管理 · 智能协作</text>
         </view>
       </view>
       <view class="hero-export-btn" bindtap="exportData">
@@ -16,109 +16,145 @@
         <text class="hero-export-text">导出</text>
       </view>
     </view>
+    <view class="hero-wave">
+      <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+        <path d="M0,50 C360,100 1080,0 1440,50 L1440,100 L0,100 Z" fill="#f5f5f5"/>
+      </svg>
+    </view>
   </view>
 
   <!-- ==================== 数据概览 ==================== -->
-  <view class="stats-bar">
-    <view class="stat-item">
-      <text class="stat-value">{{stats.total}}</text>
-      <text class="stat-label">促销员</text>
+  <view class="stats-row">
+    <view class="stat-card stat-card-total">
+      <view class="stat-card-content">
+        <text class="stat-icon">👥</text>
+        <text class="stat-value">{{stats.total}}</text>
+        <text class="stat-label">促销员</text>
+      </view>
     </view>
-    <view class="stat-divider"></view>
-    <view class="stat-item">
-      <text class="stat-value">{{stats.hired}}</text>
-      <text class="stat-label">在岗</text>
+    <view class="stat-card stat-card-hired">
+      <view class="stat-card-content">
+        <text class="stat-icon">✅</text>
+        <text class="stat-value">{{stats.hired}}</text>
+        <text class="stat-label">在岗</text>
+      </view>
     </view>
-    <view class="stat-divider"></view>
-    <view class="stat-item">
-      <text class="stat-value">{{stats.quality}}</text>
-      <text class="stat-label">优质临促</text>
+    <view class="stat-card stat-card-quality">
+      <view class="stat-card-content">
+        <text class="stat-icon">⭐</text>
+        <text class="stat-value">{{stats.quality}}</text>
+        <text class="stat-label">优质</text>
+      </view>
     </view>
-    <view class="stat-divider"></view>
-    <view class="stat-item">
-      <text class="stat-value">{{stats.provinces}}</text>
-      <text class="stat-label">覆盖省份</text>
+    <view class="stat-card stat-card-provinces">
+      <view class="stat-card-content">
+        <text class="stat-icon">📍</text>
+        <text class="stat-value">{{stats.provinces}}</text>
+        <text class="stat-label">覆盖省份</text>
+      </view>
     </view>
   </view>
 
-  <!-- ==================== 功能菜单 ==================== -->
-  <view class="menu-grid">
-
-    <view class="menu-card" bindtap="goToQuery">
-      <view class="menu-card-icon icon-query">🔍</view>
-      <text class="menu-card-title">查询</text>
-      <text class="menu-card-desc">浏览、搜索、筛选促销员</text>
-    </view>
-
-    <view class="menu-card" bindtap="goToAdd">
-      <view class="menu-card-icon icon-add">＋</view>
-      <text class="menu-card-title">添加</text>
-      <text class="menu-card-desc">新增一条促销员记录</text>
-    </view>
-
-    <view class="menu-card" bindtap="goToImport">
-      <view class="menu-card-icon icon-import">📂</view>
-      <text class="menu-card-title">导入</text>
-      <text class="menu-card-desc">从文件批量导入数据</text>
-    </view>
-
-    <view class="menu-card" bindtap="goToManage">
-      <view class="menu-card-icon icon-manage">📋</view>
-      <text class="menu-card-title">管理</text>
-      <text class="menu-card-desc">编辑、聘用、评论操作</text>
-    </view>
-
+  <!-- ==================== 快捷操作 ==================== -->
+  <view class="section-label">
+    <text class="section-label-icon">⚡</text>
+    <text class="section-label-text">快捷操作</text>
   </view>
 
-</view>
+  <view class="action-row">
+    <view class="action-card action-card-query" bindtap="goToQuery">
+      <view class="action-icon-wrap">
+        <text class="action-icon">🔍</text>
+      </view>
+      <view class="action-text">
+        <text class="action-title">查询</text>
+        <text class="action-desc">筛选浏览全部促销员</text>
+      </view>
+      <text class="action-arrow">›</text>
+    </view>
+    <view class="action-card action-card-add" bindtap="goToAdd">
+      <view class="action-icon-wrap">
+        <text class="action-icon">➕</text>
+      </view>
+      <view class="action-text">
+        <text class="action-title">添加</text>
+        <text class="action-desc">新增一条促销员记录</text>
+      </view>
+      <text class="action-arrow">›</text>
+    </view>
+  </view>
 
-<!-- ==================== 隐私协议弹窗 ==================== -->
-<view class="privacy-mask" wx:if="{{!privacyAgreed}}">
-  <view class="privacy-dialog">
-    <view class="privacy-header">
-      <text class="privacy-title">隐私政策提示</text>
-    </view>
-    <view class="privacy-body">
-      <text class="privacy-intro">感谢您使用本小程序。我们重视您的隐私，请在下方仔细阅读并同意隐私条款：</text>
-      <view class="privacy-list">
-        <text class="privacy-item">📌 信息收集：收集位置信息、微信 OpenID 及您主动录入的促销员信息</text>
-        <text class="privacy-item">📌 信息使用：仅用于促销员管理、数据统计与服务优化</text>
-        <text class="privacy-item">📌 数据安全：数据存储于微信云开发数据库，采取安全措施保护</text>
-        <text class="privacy-item">📌 用户权利：您可在"我的"页面查看和编辑您的个人信息</text>
+  <view class="action-row">
+    <view class="action-card action-card-import" bindtap="goToImport">
+      <view class="action-icon-wrap">
+        <text class="action-icon">📂</text>
       </view>
-      <view class="privacy-link" bindtap="goToPrivacy" hover-class="hover-opacity">
-        <text class="privacy-link-text">查看完整《隐私政策》</text>
-        <text class="privacy-link-arrow">›</text>
+      <view class="action-text">
+        <text class="action-title">导入</text>
+        <text class="action-desc">从 CSV/Excel 批量导入</text>
       </view>
+      <text class="action-arrow">›</text>
     </view>
-    <view class="privacy-footer">
-      <view class="privacy-checkbox" bindtap="toggleAgree">
-        <view class="checkbox-box {{privacyChecked ? 'checkbox-checked' : ''}}">
-          <text wx:if="{{privacyChecked}}" class="checkbox-icon">✓</text>
+    <view class="action-card action-card-manage" bindtap="goToManage">
+      <view class="action-icon-wrap">
+        <text class="action-icon">📋</text>
+      </view>
+      <view class="action-text">
+        <text class="action-title">管理</text>
+        <text class="action-desc">编辑、聘用、评论操作</text>
+      </view>
+      <text class="action-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- ==================== 隐私协议弹窗 ==================== -->
+  <view class="privacy-mask" wx:if="{{!privacyAgreed}}">
+    <view class="privacy-dialog">
+      <view class="privacy-header">
+        <text class="privacy-title">隐私政策提示</text>
+      </view>
+      <view class="privacy-body">
+        <text class="privacy-intro">感谢您使用本小程序。我们重视您的隐私，请在下方仔细阅读并同意隐私条款：</text>
+        <view class="privacy-list">
+          <text class="privacy-item">📌 信息收集：收集位置信息、微信 OpenID 及您主动录入的促销员信息</text>
+          <text class="privacy-item">📌 信息使用：仅用于促销员管理、数据统计与服务优化</text>
+          <text class="privacy-item">📌 数据安全：数据存储于微信云开发数据库，采取安全措施保护</text>
+          <text class="privacy-item">📌 用户权利：您可在"我的"页面查看和编辑您的个人信息</text>
         </view>
-        <text class="checkbox-label">我已阅读并同意<text class="checkbox-highlight">《隐私政策》</text></text>
+        <view class="privacy-link" bindtap="goToPrivacy" hover-class="hover-opacity">
+          <text class="privacy-link-text">查看完整《隐私政策》</text>
+          <text class="privacy-link-arrow">›</text>
+        </view>
       </view>
-      <button
-        class="privacy-btn {{privacyChecked ? 'privacy-btn-active' : ''}}"
-        disabled="{{!privacyChecked}}"
-        bindtap="confirmPrivacy"
-      >同意并继续</button>
+      <view class="privacy-footer">
+        <view class="privacy-checkbox" bindtap="toggleAgree">
+          <view class="checkbox-box {{privacyChecked ? 'checkbox-checked' : ''}}">
+            <text wx:if="{{privacyChecked}}" class="checkbox-icon">✓</text>
+          </view>
+          <text class="checkbox-label">我已阅读并同意<text class="checkbox-highlight">《隐私政策》</text></text>
+        </view>
+        <button
+          class="privacy-btn {{privacyChecked ? 'privacy-btn-active' : ''}}"
+          disabled="{{!privacyChecked}}"
+          bindtap="confirmPrivacy"
+        >同意并继续</button>
+      </view>
     </view>
   </view>
-</view>
 
-<!-- ==================== 权限验证门 ==================== -->
-<view class="auth-gate" wx:if="{{authChecked && !authorized}}">
-  <view class="auth-gate-card">
-    <view class="auth-gate-icon">🔒</view>
-    <text class="auth-gate-title">访问受限</text>
-    <text class="auth-gate-desc">此小程序为内部管理工具，您暂无访问权限。</text>
-    <text class="auth-gate-hint">请联系您的团队管理员开通账号后使用。</text>
-    <view class="auth-gate-divider"></view>
-    <view class="auth-gate-contact">
-      <text class="auth-gate-contact-label">管理员操作指引：</text>
-      <text class="auth-gate-contact-step">1. 在"设置"页添加您的手机号到白名单</text>
-      <text class="auth-gate-contact-step">2. 重新打开小程序即可正常使用</text>
+  <!-- ==================== 权限验证门 ==================== -->
+  <view class="auth-gate" wx:if="{{authChecked && !authorized}}">
+    <view class="auth-gate-card">
+      <view class="auth-gate-icon">🔒</view>
+      <text class="auth-gate-title">访问受限</text>
+      <text class="auth-gate-desc">此小程序为内部管理工具，您暂无访问权限。</text>
+      <text class="auth-gate-hint">请联系您的团队管理员开通账号后使用。</text>
+      <view class="auth-gate-divider"></view>
+      <view class="auth-gate-contact">
+        <text class="auth-gate-contact-label">管理员操作指引：</text>
+        <text class="auth-gate-contact-step">1. 在"设置"页添加您的手机号到白名单</text>
+        <text class="auth-gate-contact-step">2. 重新打开小程序即可正常使用</text>
+      </view>
     </view>
   </view>
 </view>
