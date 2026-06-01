@@ -1,0 +1,166 @@
+<view class="page">
+
+  <!-- ==================== 步骤指示器 ==================== -->
+  <view class="steps">
+    <view class="step {{step === 'select' ? 'active' : ''}} {{step !== 'select' ? 'done' : ''}}">
+      <view class="step-circle">{{step !== 'select' ? '✓' : '1'}}</view>
+      <text class="step-label">选择文件</text>
+    </view>
+    <view class="step-line {{step !== 'select' ? 'done' : ''}}"></view>
+    <view class="step {{step === 'preview' ? 'active' : ''}} {{step === 'done' ? 'done' : ''}}">
+      <view class="step-circle">{{step === 'done' ? '✓' : '2'}}</view>
+      <text class="step-label">预览数据</text>
+    </view>
+    <view class="step-line {{step === 'done' ? 'done' : ''}}"></view>
+    <view class="step {{step === 'done' ? 'active done' : ''}}">
+      <view class="step-circle">3</view>
+      <text class="step-label">完成</text>
+    </view>
+  </view>
+
+  <!-- ==================== 步骤1：选择文件 ==================== -->
+  <view wx:if="{{step === 'select'}}" class="section slide-up">
+    <view class="import-card">
+      <view class="upload-area" bindtap="chooseFile">
+        <view class="upload-icon">📂</view>
+        <text class="upload-title">点击选择数据文件</text>
+        <text class="upload-desc">支持 CSV 和 Excel（.xlsx）文件</text>
+      </view>
+      <button class="template-download-btn" loading="{{downloadingTemplate}}" bindtap="downloadTemplate">
+        📥 下载导入模板
+      </button>
+      <text class="template-download-tip">模板包含姓名、年龄、省份、城市、区/镇、街道、电话、微信号、卖场经验、底薪、备注、内部标注等全部字段</text>
+    </view>
+
+    <view class="tip-card">
+      <text class="tip-title">📌 格式要求</text>
+      <view class="tip-item">• 第一行为表头，系统自动匹配列名</view>
+      <view class="tip-item">• 列名不限顺序，支持：<text class="tip-code">姓名</text> <text class="tip-code">年龄</text> <text class="tip-code">省份</text> <text class="tip-code">城市</text> <text class="tip-code">区/镇</text> <text class="tip-code">乡/县/镇</text> <text class="tip-code">电话</text> <text class="tip-code">微信号</text> <text class="tip-code">卖场经验</text> <text class="tip-code">底薪</text> <text class="tip-code">备注</text> <text class="tip-code">内部标注</text></view>
+
+      <view class="tip-divider"></view>
+
+      <text class="tip-title">📋 示例</text>
+      <view class="example-table">
+        <view class="example-row example-header">
+          <text class="example-cell">姓名</text>
+          <text class="example-cell">省份</text>
+          <text class="example-cell">城市</text>
+          <text class="example-cell">区/镇</text>
+          <text class="example-cell">电话</text>
+        </view>
+        <view class="example-row">
+          <text class="example-cell">张三</text>
+          <text class="example-cell">广东省</text>
+          <text class="example-cell">深圳市</text>
+          <text class="example-cell">南山区</text>
+          <text class="example-cell">13800138000</text>
+        </view>
+        <view class="example-row">
+          <text class="example-cell">李四</text>
+          <text class="example-cell">广东省</text>
+          <text class="example-cell">广州市</text>
+          <text class="example-cell">天河区</text>
+          <text class="example-cell">13900139000</text>
+        </view>
+      </view>
+
+      <view class="tip-item-right">💡 在 WPS/Excel 中按此格式填写，直接保存或另存为 .csv 即可导入</view>
+    </view>
+  </view>
+
+  <!-- ==================== 步骤2：预览数据 ==================== -->
+  <view wx:if="{{step === 'preview'}}" class="section slide-up">
+    <view class="file-info">
+      <text class="file-name">📄 {{fileName}}</text>
+      <text class="file-count">共 {{previewData.length}} 条数据</text>
+    </view>
+
+    <!-- 字段识别结果 -->
+    <view class="detected-fields">
+      <text class="detected-title">🔍 识别到的字段：</text>
+      <view class="detected-tags">
+        <text wx:if="{{fieldMap.name !== undefined}}" class="detected-tag tag-ok">✅ 姓名</text>
+        <text wx:else class="detected-tag tag-warn">⚠️ 未识别姓名列</text>
+        <text wx:if="{{fieldMap.phone !== undefined}}" class="detected-tag tag-ok">✅ 电话</text>
+        <text wx:else class="detected-tag tag-warn">⚠️ 未识别电话列</text>
+        <text wx:if="{{fieldMap.age !== undefined}}" class="detected-tag tag-ok">✅ 年龄</text>
+        <text wx:if="{{fieldMap.province !== undefined}}" class="detected-tag tag-ok">✅ 省份</text>
+        <text wx:if="{{fieldMap.city !== undefined}}" class="detected-tag tag-ok">✅ 城市</text>
+        <text wx:if="{{fieldMap.district !== undefined}}" class="detected-tag tag-ok">✅ 区/镇</text>
+        <text wx:if="{{fieldMap.street !== undefined}}" class="detected-tag tag-ok">✅ 地址</text>
+        <text wx:if="{{fieldMap.wechat !== undefined}}" class="detected-tag tag-ok">✅ 微信</text>
+        <text wx:if="{{fieldMap.remark !== undefined}}" class="detected-tag tag-ok">✅ 备注</text>
+        <text wx:if="{{fieldMap.kaTags !== undefined}}" class="detected-tag tag-ok">✅ 卖场经验</text>
+        <text wx:if="{{fieldMap.baseSalary !== undefined}}" class="detected-tag tag-ok">✅ 底薪</text>
+        <text wx:if="{{fieldMap.internalTag !== undefined}}" class="detected-tag tag-ok">✅ 内部标注</text>
+      </view>
+    </view>
+
+    <!-- 预览表格 -->
+    <view class="preview-table">
+      <view class="preview-header">
+        <text class="preview-col col-sn">#</text>
+        <text class="preview-col col-name">姓名</text>
+        <text class="preview-col col-age">年龄</text>
+        <text class="preview-col col-province">省份</text>
+        <text class="preview-col col-city">城市</text>
+        <text class="preview-col col-phone">电话</text>
+        <text class="preview-col col-remark">备注</text>
+      </view>
+      <view wx:for="{{previewData}}" wx:for-index="i" wx:for-item="row" wx:key="i" class="preview-row {{i > 9 ? 'overflow' : ''}}">
+        <text class="preview-col col-sn">{{i + 1}}</text>
+        <text class="preview-col col-name">{{row.name || '-'}}</text>
+        <text class="preview-col col-age">{{row.age || '-'}}</text>
+        <text class="preview-col col-province">{{row.province || '-'}}</text>
+        <text class="preview-col col-city">{{row.city || '-'}}</text>
+        <text class="preview-col col-phone">{{row.phone || '-'}}</text>
+        <text class="preview-col col-remark">{{row.remark || '-'}}</text>
+      </view>
+      <view wx:if="{{previewData.length > 10}}" class="preview-more">还有 {{previewData.length - 10}} 条...</view>
+    </view>
+
+    <!-- 导入模式 -->
+    <view class="mode-select">
+      <text class="mode-label">导入方式</text>
+      <view class="mode-options">
+        <view
+          class="mode-option {{importMode === 'append' ? 'active' : ''}}"
+          data-mode="append"
+          bindtap="setImportMode"
+        >
+          <text class="mode-option-title">追加</text>
+          <text class="mode-option-desc">保留现有数据，新增导入记录</text>
+        </view>
+        <view
+          class="mode-option {{importMode === 'replace' ? 'active' : ''}}"
+          data-mode="replace"
+          bindtap="setImportMode"
+        >
+          <text class="mode-option-title">覆盖</text>
+          <text class="mode-option-desc">清空所有数据后导入</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="import-actions">
+      <button class="btn-back" bindtap="reset">重新选择</button>
+      <button class="btn-confirm" bindtap="confirmImport">确认导入</button>
+    </view>
+  </view>
+
+  <!-- ==================== 步骤3：完成 ==================== -->
+  <view wx:if="{{step === 'done'}}" class="section slide-up">
+    <view class="done-area">
+      <view class="done-icon">✅</view>
+      <text class="done-title">导入完成</text>
+      <text class="done-count">成功导入 {{summary.success}} 条记录</text>
+    </view>
+
+    <view class="import-actions">
+      <button class="btn-back" bindtap="reset">继续导入</button>
+      <button class="btn-confirm" bindtap="goBack">返回首页</button>
+    </view>
+  </view>
+
+</view>

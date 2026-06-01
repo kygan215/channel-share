@@ -1,0 +1,82 @@
+<view class="page">
+  <view class="privacy-card slide-up">
+
+    <text class="privacy-title">隐私政策</text>
+    <text class="privacy-update">更新日期：{{updateDate}}</text>
+
+    <view class="section">
+      <text class="section-text">本小程序尊重并保护所有用户的隐私。在使用本服务前，请仔细阅读本隐私政策。使用本服务即视为您已充分理解并同意本政策全部内容。如您不同意本政策，请停止使用本服务。</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">1. 信息收集</text>
+      <text class="section-text">我们仅收集为您提供服务所必要的信息：</text>
+      <view class="bullet-list">
+        <text class="bullet-item">微信 OpenID：用于标识用户身份、关联数据归属</text>
+        <text class="bullet-item">位置信息：用于自动填写省份/城市/区镇（需您主动授权）</text>
+        <text class="bullet-item">剪贴板内容：仅在您点击微信号输入框时检测，用于快速填写微信号</text>
+        <text class="bullet-item">促销员个人信息：您主动录入的姓名、电话、微信号、年龄等信息</text>
+        <text class="bullet-item">您上传的健康证图片：用于健康证审核管理</text>
+        <text class="bullet-item">头像图片：您在创建账号时可选择上传头像，图片将存储于微信云存储</text>
+        <text class="bullet-item">评论内容：您在对促销员进行评价时提交的文字内容</text>
+        <text class="bullet-item">用户账号信息：昵称、职位、所属省市区等信息，用于标识记录人身份</text>
+        <text class="bullet-item">云存储图片：包括但不限于头像、健康证等上传至云存储的图片文件</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section-title">2. 信息使用</text>
+      <text class="section-text">收集的信息仅用于以下目的：</text>
+      <view class="bullet-list">
+        <text class="bullet-item">提供促销员信息的录入、查询、管理功能</text>
+        <text class="bullet-item">健康证的上传与审核</text>
+        <text class="bullet-item">数据统计与导出</text>
+        <text class="bullet-item">改善服务体验</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section-title">3. 数据存储与安全</text>
+      <text class="section-text">您的数据存储在微信云开发数据库中，采用腾讯云安全防护措施。我们不会将您的个人信息传输至第三方，除非法律法规要求或获得您的明确同意。</text>
+      <view class="bullet-list">
+        <text class="bullet-item">数据保留期限：您的数据将在账户存续期间保留。账户注销后，我们将在30天内删除或匿名化处理您的所有数据</text>
+        <text class="bullet-item">数据存储位置：所有数据存储于腾讯云（微信云开发）中国大陆地区服务器</text>
+        <text class="bullet-item">数据传输：我们不会将您的个人数据传输至境外</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section-title">4. 用户权利</text>
+      <text class="section-text">您享有以下权利：</text>
+      <view class="bullet-list">
+        <text class="bullet-item">查看权：您可在「我的」页面查看您的个人信息</text>
+        <text class="bullet-item">更正权：您可随时修改您的昵称、职位、区域信息</text>
+        <text class="bullet-item">删除权：您可在「我的」页面通过「注销账号」功能删除您的账户及关联数据（需注意：注销后已录入的促销员数据可能仍保留记录人信息，但将匿名化处理）</text>
+        <text class="bullet-item">撤回同意权：您可在手机设置中关闭位置权限等授权</text>
+        <text class="bullet-item">数据可携带权：您可通过导出功能获取您的数据副本</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section-title">5. 未成年人保护</text>
+      <text class="section-text">本服务面向成年人（18周岁及以上）。如您未满18周岁，请在监护人陪同下阅读并同意本政策。如您是监护人，请对未成年人的使用行为进行监督。如发现未成年人提供了个人信息，请及时联系我们删除。</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">6. 隐私政策更新</text>
+      <text class="section-text">我们可能适时修订本隐私政策。更新后的政策将在本页面公布，修订后继续使用服务即表示同意更新后的内容。</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">7. 联系我们</text>
+      <text class="section-text">如对隐私政策有任何疑问，可通过「我的 → 关于」页面中的联系方式与我们取得联系。</text>
+    </view>
+
+    <view class="section">
+      <text class="section-text">
+        <text class="link" data-url="/pages/agreement/agreement" bindtap="navigateToAgreement">查看《用户协议》</text>
+      </text>
+    </view>
+
+  </view>
+</view>

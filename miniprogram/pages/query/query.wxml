@@ -1,0 +1,140 @@
+<view class="page">
+
+  <!-- ==================== 顶部搜索栏 ==================== -->
+  <view class="toolbar">
+    <view class="search-row">
+      <text class="search-icon" bindtap="onSearchIconTap">🔍</text>
+      <input
+        class="search-input"
+        placeholder-class="search-ph"
+        placeholder="搜索姓名、电话、微信号、省市区镇"
+        value="{{searchText}}"
+        focus="{{searchFocused}}"
+        bindinput="onSearchInput"
+        bindblur="onSearchBlur"
+        confirm-type="search"
+      />
+      <text wx:if="{{searchText}}" class="search-clear" bindtap="onSearchInput" data-value="">✕</text>
+    </view>
+    <view class="toolbar-btns">
+      <button wx:if="{{canAdd}}" class="btn-add" bindtap="goToAdd">
+        <text class="btn-icon">＋</text>
+        <text>新增</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- ==================== 筛选与排序栏（始终展开） ==================== -->
+  <scroll-view scroll-y class="filter-scroll-area">
+    <view class="filter-section">
+
+      <view class="filter-block">
+        <text class="filter-label">🏷️ 标注</text>
+        <scroll-view class="filter-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+          <view
+            wx:for="{{tagOptions}}"
+            wx:key="*this"
+            class="filter-tag {{selectedTag === (index === 0 ? '' : (index === 1 ? 'blacklist' : 'quality')) ? 'active' : ''}}"
+            data-index="{{index}}"
+            bindtap="onTagSelect"
+          >{{item}}</view>
+        </scroll-view>
+      </view>
+      <view class="filter-block">
+        <text class="filter-label">📍 省份</text>
+        <view class="filter-col">
+          <input
+            class="filter-search-input"
+            placeholder="搜索省份"
+            value="{{provinceFilterSearchText}}"
+            bindinput="onProvinceFilterSearch"
+          />
+          <scroll-view class="filter-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+            <view
+              wx:for="{{displayProvinces}}"
+              wx:key="*this"
+              class="filter-tag {{selectedProvince === item ? 'active' : ''}}"
+              data-value="{{item}}"
+              bindtap="onProvinceSelect"
+            >{{item}}</view>
+          </scroll-view>
+        </view>
+      </view>
+
+      <view class="filter-block">
+        <text class="filter-label">🏙️ 城市</text>
+        <view class="filter-col">
+          <input
+            class="filter-search-input"
+            placeholder="{{selectedProvince === '全部省份' ? '请先选择省份' : '搜索城市'}}"
+            value="{{cityFilterSearchText}}"
+            bindinput="onCityFilterSearch"
+          />
+          <scroll-view class="filter-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+            <view
+              wx:for="{{displayCities}}"
+              wx:key="*this"
+              class="filter-tag {{selectedCity === item ? 'active' : ''}}"
+              data-value="{{item}}"
+              bindtap="onCitySelect"
+            >{{item}}</view>
+          </scroll-view>
+        </view>
+      </view>
+
+      <view class="filter-block">
+        <text class="filter-label">🏘️ 区/镇</text>
+        <view class="filter-col">
+          <input
+            class="filter-search-input"
+            placeholder="{{selectedCity === '全部城市' ? '请先选择城市' : '搜索区/镇'}}"
+            value="{{districtFilterSearchText}}"
+            bindinput="onDistrictFilterSearch"
+          />
+          <scroll-view class="filter-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+            <view
+              wx:for="{{displayDistricts}}"
+              wx:key="*this"
+              class="filter-tag {{selectedDistrict === item ? 'active' : ''}}"
+              data-value="{{item}}"
+              bindtap="onDistrictSelect"
+            >{{item}}</view>
+          </scroll-view>
+        </view>
+      </view>
+
+      <view class="filter-block">
+        <text class="filter-label">🏡 街道/乡镇</text>
+        <view class="filter-col">
+          <input
+            class="filter-search-input"
+            placeholder="输入街道/乡镇名称筛选"
+            value="{{selectedStreet}}"
+            bindinput="onStreetInput"
+          />
+        </view>
+      </view>
+
+      <view class="filter-block">
+        <text class="filter-label">📊 排序</text>
+        <scroll-view class="filter-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+          <view
+            wx:for="{{sortOptions}}"
+            wx:key="*this"
+            class="filter-tag {{sortIndex === index ? 'active' : ''}}"
+            data-index="{{index}}"
+            bindtap="onSortTabTap"
+          >{{item}}</view>
+        </scroll-view>
+      </view>
+
+      <!-- ==================== 搜索按钮 ==================== -->
+      <button class="search-submit-btn" bindtap="submitSearch">
+        <text class="search-submit-icon">🔍</text>
+        <text>搜索</text>
+      </button>
+
+    </view>
+  </scroll-view>
+
+</view>

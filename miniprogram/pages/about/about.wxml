@@ -1,0 +1,120 @@
+<view class="page">
+
+  <!-- ==================== 应用标识 ==================== -->
+  <view class="app-header">
+    <image class="app-logo-img" src="/images/logo.png" mode="aspectFit" />
+    <text class="app-name">促销信息共享</text>
+    <text class="app-version">{{appVersion}}</text>
+  </view>
+
+  <!-- ==================== 手机号信息 ==================== -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">📱 手机号信息</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">已绑定手机号</text>
+      <text class="info-value">{{phone}}</text>
+    </view>
+  </view>
+
+  <!-- ==================== 功能概览 ==================== -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">🚀 功能介绍</text>
+    </view>
+    <view class="feature-list">
+      <view class="feature-item">
+        <text class="feature-icon">🔍</text>
+        <view class="feature-info">
+          <text class="feature-name">促销员查询</text>
+          <text class="feature-desc">按省市区、标注、关键词搜索筛选</text>
+        </view>
+      </view>
+      <view class="feature-item">
+        <text class="feature-icon">➕</text>
+        <view class="feature-info">
+          <text class="feature-name">新增记录</text>
+          <text class="feature-desc">自动定位、智能识别微信号</text>
+        </view>
+      </view>
+      <view class="feature-item">
+        <text class="feature-icon">📂</text>
+        <view class="feature-info">
+          <text class="feature-name">批量导入</text>
+          <text class="feature-desc">支持 CSV / Excel 文件导入</text>
+        </view>
+      </view>
+      <view class="feature-item">
+        <text class="feature-icon">📋</text>
+        <view class="feature-info">
+          <text class="feature-name">促销管理</text>
+          <text class="feature-desc">编辑、删除、评论、聘用/解聘</text>
+        </view>
+      </view>
+      <view class="feature-item">
+        <text class="feature-icon">✅</text>
+        <view class="feature-info">
+          <text class="feature-name">健康证管理</text>
+          <text class="feature-desc">上传、审核、状态追踪</text>
+        </view>
+      </view>
+      <view class="feature-item">
+        <text class="feature-icon">⬇</text>
+        <view class="feature-info">
+          <text class="feature-name">数据导出</text>
+          <text class="feature-desc">导出 CSV / Excel 备份数据</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 关于我们 ==================== -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">ℹ️ 关于我们</text>
+    </view>
+    <view class="about-content">
+      <text class="about-text">促销信息共享是一款专为销售团队打造的促销管理工具，帮助团队高效管理各省份促销信息、促销员数据和客户反馈。</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">应用版本</text>
+      <text class="info-value">{{appVersion}}</text>
+    </view>
+    <view class="info-item">
+      <text class="info-label">运行环境</text>
+      <text class="info-value">{{systemInfo}}</text>
+    </view>
+  </view>
+
+  <!-- ==================== 隐私政策 ==================== -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">🔒 隐私与安全</text>
+    </view>
+    <view class="contact-item" bindtap="goToPrivacy">
+      <text class="contact-icon">📄</text>
+      <view class="contact-info">
+        <text class="contact-label">隐私政策</text>
+        <text class="contact-desc">查看我们如何收集和使用您的数据</text>
+      </view>
+      <text class="contact-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- ==================== 联系我们 ==================== -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">📞 联系我们</text>
+    </view>
+    <view class="contact-item" bindtap="copyContact">
+      <text class="contact-icon">💬</text>
+      <view class="contact-info">
+        <text class="contact-label">客服微信</text>
+        <text class="contact-desc">联系团队管理员获取帮助</text>
+      </view>
+      <text class="contact-arrow">›</text>
+    </view>
+  </view>
+
+</view>

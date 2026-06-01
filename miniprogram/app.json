@@ -1,16 +1,51 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/add/add"
+    "pages/my/my",
+    "pages/add/add",
+    "pages/query/query",
+    "pages/query-results/query-results",
+    "pages/import/import",
+    "pages/manage/manage",
+    "pages/settings/settings",
+    "pages/about/about",
+    "pages/privacy/privacy",
+    "pages/agreement/agreement"
   ],
   "window": {
     "backgroundColor": "#f5f5f5",
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#07c160",
-    "navigationBarTitleText": "渠道信息共享",
+    "navigationBarTitleText": "促销信息共享",
     "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#999",
+    "selectedColor": "#07c160",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/icons/home.png",
+        "selectedIconPath": "images/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/my/my",
+        "text": "我的",
+        "iconPath": "images/icons/usercenter.png",
+        "selectedIconPath": "images/icons/usercenter-active.png"
+      }
+    ]
   },
   "sitemapLocation": "sitemap.json",
   "style": "v2",
-  "lazyCodeLoading": "requiredComponents"
+  "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于自动填写省份/城市/区镇"
+    }
+  },
+  "requiredPrivateInfos": ["chooseLocation", "getLocation"]
 }

@@ -1,0 +1,546 @@
+/* ============================================================
+   管理页样式 — 卡片样式继承 query-results + 管理特有扩展
+   ============================================================ */
+
+@import '../query-results/query-results.wxss';
+
+/* =========================================================== */
+/* 顶部工具栏                                                  */
+/* =========================================================== */
+
+.toolbar {
+  padding: 16rpx 20rpx 12rpx;
+  background: #fff;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.search-row {
+  display: flex;
+  align-items: center;
+  height: 72rpx;
+  background: var(--gray-2);
+  border-radius: var(--radius-round);
+  padding: 0 12rpx 0 20rpx;
+  gap: 8rpx;
+  transition: background 0.2s;
+}
+
+.search-row:focus-within {
+  background: #fff;
+  box-shadow: 0 0 0 2rpx var(--primary);
+}
+
+.search-icon {
+  font-size: 28rpx;
+  flex-shrink: 0;
+  padding: 8rpx 4rpx;
+}
+
+.search-input {
+  flex: 1;
+  font-size: var(--font-md);
+  color: var(--gray-8);
+  height: 100%;
+}
+
+.search-ph {
+  color: var(--gray-5);
+  font-size: 22rpx;
+}
+
+.search-clear {
+  font-size: 30rpx;
+  color: var(--gray-5);
+  flex-shrink: 0;
+  padding: 8rpx 12rpx;
+}
+
+.toolbar-btns {
+  display: flex;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
+.btn-add {
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 24rpx;
+  background: var(--primary-gradient);
+  color: #fff;
+  border-radius: var(--radius-round);
+  font-size: var(--font-md);
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  box-shadow: 0 4rpx 12rpx rgba(7, 193, 96, 0.3);
+}
+
+.btn-add:active {
+  opacity: 0.85;
+  transform: scale(0.96);
+}
+
+.btn-icon {
+  font-size: 28rpx;
+}
+
+/* =========================================================== */
+/* 筛选区域（始终展开）                                        */
+/* =========================================================== */
+
+.filter-section {
+  padding: 12rpx 20rpx;
+  background: #fff;
+  border-bottom: 2rpx solid var(--gray-2);
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  flex-shrink: 0;
+}
+
+.filter-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+}
+
+.filter-label {
+  font-size: var(--font-xs);
+  color: var(--gray-6);
+  flex-shrink: 0;
+  width: 6em;
+  padding-top: 8rpx;
+}
+
+.filter-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-scroll {
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 52rpx;
+  padding: 0 22rpx;
+  margin-right: 10rpx;
+  background: var(--gray-2);
+  border-radius: var(--radius-round);
+  font-size: var(--font-xs);
+  color: var(--gray-7);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.filter-tag.active {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2rpx 8rpx rgba(7, 193, 96, 0.25);
+}
+
+.filter-search-input {
+  width: 100%;
+  height: 56rpx;
+  background: var(--gray-2);
+  border-radius: var(--radius-md);
+  padding: 0 18rpx;
+  font-size: var(--font-xs);
+  color: var(--gray-8);
+  box-sizing: border-box;
+  margin-bottom: 6rpx;
+  border: 2rpx solid transparent;
+}
+
+.filter-search-input:focus {
+  background: #fff;
+  border-color: var(--primary);
+}
+
+/* =========================================================== */
+/* 编辑/删除按钮                                               */
+/* =========================================================== */
+
+.btn-edit {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.btn-delete {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+/* =========================================================== */
+/* 批量删除                                                    */
+/* =========================================================== */
+
+.btn-batch {
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 20rpx;
+  background: var(--gray-2);
+  color: var(--gray-7);
+  border-radius: var(--radius-round);
+  font-size: var(--font-md);
+  font-weight: 500;
+}
+
+.btn-batch.active {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+.batch-bar {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 20rpx;
+  background: #fff;
+  border-bottom: 2rpx solid var(--gray-2);
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
+.batch-select-all {
+  height: 56rpx;
+  line-height: 56rpx;
+  padding: 0 20rpx;
+  background: var(--gray-2);
+  color: var(--gray-7);
+  border-radius: var(--radius-round);
+  font-size: var(--font-sm);
+  flex-shrink: 0;
+}
+
+.batch-count {
+  flex: 1;
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--danger);
+  text-align: center;
+}
+
+.batch-delete-btn {
+  height: 56rpx;
+  line-height: 56rpx;
+  padding: 0 20rpx;
+  background: var(--danger);
+  color: #fff;
+  border-radius: var(--radius-round);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.batch-delete-btn:active {
+  opacity: 0.8;
+}
+
+.card-checkbox {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  flex-shrink: 0;
+  margin-right: 8rpx;
+  border-radius: 50%;
+  background: var(--gray-1);
+  transition: all 0.15s;
+}
+
+.card-checkbox.checked {
+  color: var(--danger);
+  background: #fef0f0;
+}
+
+/* =========================================================== */
+/* 健康证区域                                                  */
+/* =========================================================== */
+
+.healthcert-section {
+  margin-top: 12rpx;
+  padding: 16rpx 24rpx;
+  background: var(--gray-1);
+  border-radius: var(--radius-sm);
+}
+
+.healthcert-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.healthcert-label {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--gray-7);
+}
+
+.healthcert-status {
+  font-size: 20rpx;
+  padding: 2rpx 12rpx;
+  border-radius: var(--radius-round);
+  font-weight: 500;
+}
+
+.healthcert-status.status-none {
+  background: var(--gray-3);
+  color: var(--gray-5);
+}
+
+.healthcert-status.status-pending {
+  background: #fff3e0;
+  color: #ff976a;
+}
+
+.healthcert-status.status-approved {
+  background: #e6f9ed;
+  color: #07c160;
+  font-weight: 600;
+}
+
+.healthcert-status.status-rejected {
+  background: #fef0f0;
+  color: #e64340;
+}
+
+.healthcert-reject-reason {
+  font-size: 20rpx;
+  color: #e64340;
+  margin-top: 4rpx;
+  padding: 4rpx 0;
+}
+
+.healthcert-actions {
+  display: flex;
+  gap: 8rpx;
+  margin-top: 8rpx;
+}
+
+.healthcert-btn {
+  height: 48rpx;
+  line-height: 48rpx;
+  padding: 0 16rpx;
+  border-radius: var(--radius-round);
+  font-size: 20rpx;
+  font-weight: 500;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.healthcert-btn:active {
+  opacity: 0.7;
+}
+
+.healthcert-btn.btn-upload {
+  background: var(--blue-light);
+  color: var(--blue);
+}
+
+.healthcert-btn.btn-view {
+  background: var(--gray-2);
+  color: var(--gray-7);
+}
+
+.healthcert-btn.btn-review {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* =========================================================== */
+/* 审核弹窗                                                    */
+/* =========================================================== */
+
+.review-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.review-modal {
+  width: 640rpx;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 24rpx;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 28rpx 16rpx;
+}
+
+.review-title {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+  color: var(--gray-8);
+}
+
+.review-close {
+  font-size: 36rpx;
+  color: var(--gray-5);
+  padding: 8rpx;
+  flex-shrink: 0;
+}
+
+.review-close:active {
+  color: var(--gray-7);
+}
+
+.review-body {
+  padding: 0 28rpx 28rpx;
+  overflow-y: auto;
+}
+
+.review-name {
+  font-size: var(--font-xl);
+  font-weight: 600;
+  color: var(--gray-8);
+  margin-bottom: 16rpx;
+}
+
+.review-image {
+  width: 100%;
+  border-radius: var(--radius-md);
+  background: var(--gray-2);
+  margin-bottom: 20rpx;
+}
+
+.review-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 12rpx;
+}
+
+.review-btn {
+  flex: 1;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: var(--radius-md);
+  font-size: var(--font-lg);
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.review-btn:active {
+  opacity: 0.8;
+}
+
+.review-btn.btn-approve {
+  background: var(--primary-gradient);
+  color: #fff;
+}
+
+.review-btn.btn-reject {
+  background: var(--danger-light);
+  color: var(--danger);
+}
+
+.review-reject-row {
+  margin-top: 4rpx;
+}
+
+.review-reject-input {
+  width: 100%;
+  height: 64rpx;
+  background: var(--gray-2);
+  border-radius: var(--radius-md);
+  padding: 0 20rpx;
+  font-size: var(--font-md);
+  color: var(--gray-8);
+  box-sizing: border-box;
+}
+
+/* =========================================================== */
+/* 手机号白名单验证遮罩                                        */
+/* =========================================================== */
+
+.phone-auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.phone-auth-box {
+  width: 560rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 48rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.phone-auth-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--gray-8);
+  margin-bottom: 12rpx;
+}
+
+.phone-auth-desc {
+  font-size: 26rpx;
+  color: var(--gray-5);
+  margin-bottom: 36rpx;
+  text-align: center;
+}
+
+.phone-auth-input {
+  width: 100%;
+  height: 80rpx;
+  background: var(--gray-2);
+  border-radius: var(--radius-md);
+  padding: 0 24rpx;
+  font-size: 32rpx;
+  color: var(--gray-8);
+  text-align: center;
+  box-sizing: border-box;
+  margin-bottom: 32rpx;
+}
+
+.phone-auth-btn {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: var(--primary-gradient);
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.phone-auth-btn:active {
+  opacity: 0.8;
+}

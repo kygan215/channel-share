@@ -1,5 +1,3 @@
 {
-  "dependencies": {
-    "@cloudbase/wx-cloud-client-sdk": "^1.8.8"
-  }
+  "dependencies": {}
 }

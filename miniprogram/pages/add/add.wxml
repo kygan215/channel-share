@@ -1,12 +1,103 @@
 <view class="page">
-  <view class="form">
+  <view class="form-card slide-up">
+
+    <!-- ========== 顶部标题 ========== -->
+    <view class="form-header">
+      <text class="form-title">{{editMode ? '编辑促销员' : '新增促销员'}}</text>
+      <text class="form-subtitle">{{editMode ? '修改促销员信息' : '添加新的促销员信息'}}</text>
+    </view>
+
+    <!-- ========== 姓名 ========== -->
+    <view class="form-item">
+      <text class="label">
+        <text class="label-icon">👤</text>
+        姓名
+        <text class="required">*</text>
+      </text>
+      <input
+        class="text-input"
+        placeholder="请输入促销员姓名"
+        value="{{name}}"
+        data-field="name"
+        bindinput="onInput"
+      />
+    </view>
+
+    <view class="divider"></view>
+
+    <!-- ========== 自动定位按钮 ========== -->
+    <view wx:if="{{!editMode}}" class="action-bar">
+      <button class="locate-btn" bindtap="autoLocate">
+        <text class="locate-icon">📍</text>
+        <text>自动定位并填写位置</text>
+      </button>
+    </view>
+
+    <!-- ========== 批量工具行 ========== -->
+    <view wx:if="{{!editMode}}" class="tools-row">
+      <button class="tool-btn import-btn" bindtap="goToImport">
+        <text class="tool-icon">📥</text>
+        <text class="tool-text">批量导入</text>
+      </button>
+      <button class="tool-btn template-btn {{showFormatGuide ? 'active' : ''}}" bindtap="toggleFormatGuide">
+        <text class="tool-icon">📋</text>
+        <text class="tool-text">{{showFormatGuide ? '收起说明' : '格式说明'}}</text>
+      </button>
+    </view>
+
+    <!-- ========== 格式说明面板 ========== -->
+    <view wx:if="{{showFormatGuide}}" class="format-guide slide-down">
+      <view class="guide-section">
+        <text class="guide-title">📌 支持的列名（不限顺序）</text>
+        <view class="guide-tags">
+          <text class="guide-tag">姓名</text>
+          <text class="guide-tag">年龄</text>
+          <text class="guide-tag">省份</text>
+          <text class="guide-tag">城市</text>
+          <text class="guide-tag">区/镇</text>
+          <text class="guide-tag">乡/县/镇</text>
+          <text class="guide-tag">电话</text>
+          <text class="guide-tag">微信号</text>
+          <text class="guide-tag">卖场经验</text>
+          <text class="guide-tag">底薪</text>
+          <text class="guide-tag">备注</text>
+          <text class="guide-tag">内部标注</text>
+        </view>
+      </view>
+      <view class="guide-section">
+        <text class="guide-title">📋 示例</text>
+        <view class="guide-table">
+          <view class="guide-row guide-header">
+            <text class="guide-cell">姓名</text>
+            <text class="guide-cell">省份</text>
+            <text class="guide-cell">城市</text>
+            <text class="guide-cell">区/镇</text>
+            <text class="guide-cell">电话</text>
+          </view>
+          <view class="guide-row">
+            <text class="guide-cell">张三</text>
+            <text class="guide-cell">广东省</text>
+            <text class="guide-cell">深圳市</text>
+            <text class="guide-cell">南山区</text>
+            <text class="guide-cell">13800138000</text>
+          </view>
+          <view class="guide-row">
+            <text class="guide-cell">李四</text>
+            <text class="guide-cell">广东省</text>
+            <text class="guide-cell">广州市</text>
+            <text class="guide-cell">天河区</text>
+            <text class="guide-cell">13900139000</text>
+          </view>
+        </view>
+      </view>
+      <view class="guide-tip">💡 用 WPS/Excel 打开，第一行写列名，后面写数据，另存为 .csv 文件即可导入</view>
+    </view>
 
     <!-- ========== 第一行：省份 | 城市 ========== -->
     <view class="form-row">
-
-      <!-- 省份：搜索 + 滚动选择 -->
       <view class="form-half">
         <text class="label">
+          <text class="label-icon">📍</text>
           省份
           <text class="required">*</text>
         </text>
@@ -16,23 +107,22 @@
           value="{{provinceSearchText}}"
           bindinput="onProvinceSearch"
         />
-        <scroll-view class="tab-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+        <scroll-view class="tag-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
           <view
             wx:for="{{filteredProvinceList}}"
             wx:key="*this"
-            class="tab-item {{province === item ? 'active' : ''}}"
+            class="tag {{province === item ? 'active' : ''}}"
             data-value="{{item}}"
             bindtap="onProvinceTabTap"
           >
             {{item}}
           </view>
-          <view wx:if="{{filteredProvinceList.length === 0}}" class="tab-item placeholder">无匹配</view>
+          <view wx:if="{{filteredProvinceList.length === 0}}" class="tag placeholder">无匹配</view>
         </scroll-view>
       </view>
-
-      <!-- 城市：搜索 + 滚动选择（依赖省份） -->
       <view class="form-half">
         <text class="label">
+          <text class="label-icon">🏙️</text>
           城市
           <text class="required">*</text>
         </text>
@@ -42,28 +132,26 @@
           value="{{citySearchText}}"
           bindinput="onCitySearch"
         />
-        <scroll-view class="tab-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+        <scroll-view class="tag-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
           <view
             wx:for="{{filteredCityList}}"
             wx:key="*this"
-            class="tab-item {{city === item ? 'active' : ''}}"
+            class="tag {{city === item ? 'active' : ''}}"
             data-value="{{item}}"
             bindtap="onCityTabTap"
           >
             {{item}}
           </view>
-          <view wx:if="{{filteredCityList.length === 0}}" class="tab-item placeholder">请先选择省份</view>
+          <view wx:if="{{filteredCityList.length === 0}}" class="tag placeholder">请先选择省份</view>
         </scroll-view>
       </view>
-
     </view>
 
     <!-- ========== 第二行：区/镇 | 乡/县/镇 ========== -->
     <view class="form-row">
-
-      <!-- 区/镇：搜索 + 滚动选择（必填，依赖城市） -->
       <view class="form-half">
         <text class="label">
+          <text class="label-icon">🏘️</text>
           区/镇
           <text class="required">*</text>
         </text>
@@ -73,40 +161,46 @@
           value="{{districtSearchText}}"
           bindinput="onDistrictSearch"
         />
-        <scroll-view class="tab-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+        <scroll-view class="tag-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
           <view
             wx:for="{{filteredDistrictList}}"
             wx:key="*this"
-            class="tab-item {{district === item ? 'active' : ''}}"
+            class="tag {{district === item ? 'active' : ''}}"
             data-value="{{item}}"
             bindtap="onDistrictTabTap"
           >
             {{item}}
           </view>
-          <view wx:if="{{filteredDistrictList.length === 0}}" class="tab-item placeholder">请先选择城市</view>
+          <view wx:if="{{filteredDistrictList.length === 0}}" class="tag placeholder">请先选择城市</view>
         </scroll-view>
       </view>
-
-      <!-- 乡/县/镇：手动输入（选填） -->
       <view class="form-half">
-        <text class="label">乡/县/镇</text>
+        <text class="label">
+          <text class="label-icon">🏡</text>
+          乡/县/镇
+        </text>
         <input
           class="text-input"
-          placeholder="请输入"
+          placeholder="自动定位后自动填写（选填）"
           value="{{street}}"
           data-field="street"
           bindinput="onInput"
         />
       </view>
-
     </view>
 
-    <!-- ========== 电话：手动输入 ========== -->
+    <!-- ========== 分割装饰线 ========== -->
+    <view class="divider"></view>
+
+    <!-- ========== 电话 ========== -->
     <view class="form-item">
-      <text class="label">电话</text>
+      <text class="label">
+        <text class="label-icon">📞</text>
+        电话
+      </text>
       <input
         class="text-input"
-        placeholder="请输入电话"
+        placeholder="请输入联系电话"
         type="number"
         value="{{phone}}"
         data-field="phone"
@@ -115,22 +209,163 @@
       />
     </view>
 
-    <!-- ========== 微信：手动输入 ========== -->
+    <!-- ========== 微信号 ========== -->
     <view class="form-item">
-      <text class="label">微信号</text>
+      <view class="label-row">
+        <text class="label">
+          <text class="label-icon">💬</text>
+          微信号
+        </text>
+        <text class="clipboard-hint">点击输入框自动检测剪贴板</text>
+      </view>
       <input
         class="text-input"
         placeholder="请输入微信号"
         value="{{wechat}}"
         data-field="wechat"
         bindinput="onInput"
+        bindfocus="onWechatFocus"
       />
     </view>
 
+    <!-- ========== 年龄 ========== -->
+    <view class="form-item">
+      <text class="label">
+        <text class="label-icon">🎂</text>
+        年龄
+      </text>
+      <input
+        class="text-input"
+        placeholder="请输入年龄（选填）"
+        type="number"
+        value="{{age}}"
+        data-field="age"
+        bindinput="onInput"
+        maxlength="3"
+      />
+    </view>
+
+    <!-- ========== 备注 ========== -->
+    <view class="form-item">
+      <view class="label-row">
+        <text class="label">
+          <text class="label-icon">📝</text>
+          备注
+        </text>
+        <text class="clipboard-hint">合作历史、反馈、注意事项等</text>
+      </view>
+      <textarea
+        class="text-area"
+        placeholder="是否合作过、合作反馈、注意事项等（选填）"
+        value="{{remark}}"
+        data-field="remark"
+        bindinput="onInput"
+      />
+    </view>
+
+    <!-- ========== KA 系统经验 ========== -->
+    <view class="divider"></view>
+
+    <view class="form-item">
+      <view class="label-row">
+        <text class="label">
+          <text class="label-icon">🏪</text>
+          卖场经验
+        </text>
+        <text class="clipboard-hint">选填，点击选择</text>
+      </view>
+
+      <!-- 已选标签 -->
+      <view wx:if="{{kaTags.length > 0}}" class="ka-tags-selected">
+        <view wx:for="{{kaTags}}" wx:key="*this" class="ka-tag-selected">
+          <text class="ka-tag-text">{{item}}</text>
+          <text class="ka-tag-remove" data-tag="{{item}}" bindtap="removeKaTag">✕</text>
+        </view>
+      </view>
+
+      <!-- 预设标签 -->
+      <scroll-view class="ka-tag-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+        <view
+          wx:for="{{kaTagOptions}}"
+          wx:key="*this"
+          class="ka-tag-option {{kaTags.indexOf(item) !== -1 ? 'active' : ''}}"
+          data-tag="{{item}}"
+          bindtap="toggleKaTag"
+        >{{item}}</view>
+      </scroll-view>
+
+      <!-- 自定义输入 -->
+      <view class="ka-custom-row">
+        <input
+          class="ka-custom-input"
+          placeholder="输入自定义卖场"
+          value="{{kaCustomInput}}"
+          bindinput="onKaCustomInput"
+          confirm-type="done"
+        />
+        <button class="ka-custom-btn" bindtap="addKaCustomTag">添加</button>
+      </view>
+    </view>
+
+    <!-- ========== 底薪 ========== -->
+    <view class="form-item">
+      <view class="label-row">
+        <text class="label">
+          <text class="label-icon">💰</text>
+          底薪
+        </text>
+        <text class="clipboard-hint">元/天，选填</text>
+      </view>
+      <input
+        class="text-input"
+        placeholder="请输入底薪金额（元/天）"
+        type="digit"
+        value="{{baseSalary}}"
+        data-field="baseSalary"
+        bindinput="onInput"
+      />
+      <text wx:if="{{kaTags.length > 0 && baseSalary}}" class="salary-hint">
+        💡 {{baseSalary}}元/天 · 有{{kaTags.length}}个卖场经验，按最高底薪计算
+      </text>
+    </view>
+
+    <!-- ========== 内部标记 ========== -->
+    <view class="form-item">
+      <view class="label-row">
+        <text class="label">
+          <text class="label-icon">🏷️</text>
+          内部标注
+        </text>
+        <text class="clipboard-hint">方便筛选，可多选</text>
+      </view>
+      <view class="tag-toggle-row">
+        <view class="tag-toggle {{blacklisted ? 'active-black' : ''}}" bindtap="toggleBlacklist">
+          <text wx:if="{{blacklisted}}" class="tag-toggle-icon">⚫</text>
+          <text wx:else class="tag-toggle-icon">○</text>
+          <text>黑名单</text>
+        </view>
+        <view class="tag-toggle {{quality ? 'active-gold' : ''}}" bindtap="toggleQuality">
+          <text wx:if="{{quality}}" class="tag-toggle-icon">⭐</text>
+          <text wx:else class="tag-toggle-icon">☆</text>
+          <text>优质临促</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ========== 隐私提示 ========== -->
+    <view class="privacy-notice">
+      <text class="privacy-notice-icon">🔒</text>
+      <text class="privacy-notice-text">提交即表示您已获得该促销员本人同意，将其信息录入本系统用于促销管理</text>
+    </view>
+
     <!-- ========== 提交按钮 ========== -->
-    <button class="submit-btn" bindtap="submit" disabled="{{submitting}}">
-      <text wx:if="{{submitting}}">提交中...</text>
-      <text wx:else>提交</text>
+    <button
+      class="submit-btn {{submitting ? 'loading' : ''}}"
+      bindtap="submit"
+      disabled="{{submitting}}"
+    >
+      <text wx:if="{{submitting}}">⏳ {{editMode ? '保存中...' : '提交中...'}}</text>
+      <text wx:else>{{editMode ? '✓ 保存修改' : '✓ 提交信息'}}</text>
     </button>
 
   </view>

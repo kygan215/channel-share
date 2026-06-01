@@ -1,0 +1,131 @@
+<view class="page">
+  <view class="agreement-card slide-up">
+
+    <text class="agreement-title">用户协议</text>
+    <text class="agreement-update">更新日期：{{updateDate}}</text>
+
+    <view class="section">
+      <text class="section-title">1. 服务条款的确认与接受</text>
+      <text class="section-text">
+        欢迎使用「促销信息共享促销管理平台」（以下简称"本平台"或"本服务"）。本平台是一款基于微信小程序的促销员信息共享与管理工具，旨在为促销行业从业者提供便捷的信息管理服务。
+      </text>
+      <text class="section-text">
+        在您使用本服务之前，请仔细阅读并充分理解本《用户协议》（以下简称"本协议"）的全部内容。您使用本服务的行为，即视为您已阅读、理解并同意接受本协议的全部条款。如您不同意本协议的任何条款，请您立即停止使用本服务。
+      </text>
+      <text class="section-text">
+        本平台有权根据需要不时地修订本协议，修订后的协议一经公布即替代原协议。如您继续使用本服务，即表示您接受修订后的协议。
+      </text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">2. 用户资格与注册</text>
+      <text class="section-text">
+        您确认，在您使用本服务时，您应当具备完全民事权利能力和完全民事行为能力。如您未满18周岁，请在法定监护人的陪同下阅读本协议，并取得监护人的同意后使用本服务。
+      </text>
+      <view class="bullet-list">
+        <text class="bullet-item">您在注册或使用本服务时应当提供真实、准确、完整的个人信息，并在信息变更时及时更新</text>
+        <text class="bullet-item">您应当妥善保管您的微信账号及密码，因账号被盗用或密码泄露导致的损失由您自行承担</text>
+        <text class="bullet-item">每个用户仅限拥有一个账户，不得恶意注册多个账号或冒用他人身份</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section-title">3. 服务内容</text>
+      <text class="section-text">本平台为您提供以下服务：</text>
+      <view class="bullet-list">
+        <text class="bullet-item">促销员信息管理：支持促销员信息的录入、查询、编辑和删除</text>
+        <text class="bullet-item">数据导入与导出：支持CSV/Excel格式的数据导入和导出</text>
+        <text class="bullet-item">健康证上传与审核：支持健康证明文件的上传及审核状态管理</text>
+        <text class="bullet-item">评论与评价功能：支持对促销员进行评论和评价</text>
+        <text class="bullet-item">数据统计与分析：提供多维度的数据统计和分析功能</text>
+      </view>
+      <text class="section-text">
+        本平台保留根据实际情况调整、变更、中断或终止部分或全部服务的权利，我们将尽合理努力提前通知您。
+      </text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">4. 用户行为规范</text>
+      <text class="section-text">在使用本服务时，您承诺遵守以下行为规范：</text>
+      <view class="bullet-list">
+        <text class="bullet-item">不得滥用本服务，包括但不限于利用本服务进行非法活动或侵犯他人合法权益的行为</text>
+        <text class="bullet-item">不得上传、发布或传播任何违法、色情、暴力、赌博、诈骗、诽谤、淫秽或违反社会公序良俗的内容</text>
+        <text class="bullet-item">不得侵犯他人隐私权、肖像权、名誉权、知识产权等合法权益</text>
+        <text class="bullet-item">不得利用本服务进行任何商业招揽、广告推广或垃圾信息传播</text>
+        <text class="bullet-item">不得采取任何可能破坏本服务正常运行的行为，包括但不限于网络攻击、数据爬取等</text>
+        <text class="bullet-item">遵守中华人民共和国的相关法律法规，不得从事任何违法违规行为</text>
+      </view>
+      <text class="section-text">
+        如您违反上述规范，本平台有权在不事先通知的情况下暂停或终止您的服务，并保留追究法律责任的权利。
+      </text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">5. 数据管理</text>
+      <text class="section-text">
+        您在本平台中录入的数据归属于您本人，您对所录入数据的真实性、准确性、合法性负责。
+      </text>
+      <view class="bullet-list">
+        <text class="bullet-item">数据导出：我们提供数据导出工具（CSV/Excel），您可以随时导出您的数据</text>
+        <text class="bullet-item">账户删除：您可以通过「我的 → 关于」页面中的联系方式联系我们申请删除账户及相关数据</text>
+        <text class="bullet-item">数据保留与清除：在您的账户保持激活期间，我们将持续保留您的数据。账户成功删除后，我们将在30天内清除所有相关数据</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section-title">6. 免责声明</text>
+      <view class="bullet-list">
+        <text class="bullet-item">本服务按"现状"和"可得到"的状态提供，不提供任何明示或暗示的保证</text>
+        <text class="bullet-item">您理解并同意，您录入数据的准确性、合法性由您自行负责，本平台不承担因数据错误引发的任何责任</text>
+        <text class="bullet-item">因系统维护、网络故障、第三方服务中断等原因导致的服务暂停，本平台不承担赔偿责任</text>
+        <text class="bullet-item">用户之间因使用本服务产生的任何纠纷，由双方自行协商解决，本平台不承担连带责任</text>
+        <text class="bullet-item">在法律允许的最大范围内，本平台不对因使用或无法使用本服务产生的任何间接、附带、特殊或惩罚性损害承担责任</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <text class="section-title">7. 知识产权</text>
+      <text class="section-text">
+        本小程序的源代码、界面设计、品牌标识、LOGO、产品名称及文档等知识产权，除另有声明外，均归开发者所有，受《中华人民共和国著作权法》及相关法律保护。未经书面许可，任何人不得擅自使用、复制、修改、传播或反编译。
+      </text>
+      <text class="section-text">
+        您录入和上传至本平台的数据内容，其知识产权归属于您或相关权利人。您授予本平台非排他的、免费的、不可撤销的许可，以便本平台为您提供数据存储和管理服务。
+      </text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">8. 协议更新与终止</text>
+      <text class="section-text">
+        本平台保留随时修改本协议的权利。协议更新后，我们将在本页面公布最新版本，并更新页面顶部的"更新日期"。修改后的协议一经公布即生效。
+      </text>
+      <text class="section-text">
+        在协议更新后，如您继续使用本服务，即表示您同意接受更新后的协议条款。如您不同意修改后的协议，请立即停止使用本服务。
+      </text>
+      <text class="section-text">
+        如您违反本协议的任何条款，本平台有权不经通知立即暂停或终止向您提供服务，并保留追究法律责任的权利。
+      </text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">9. 适用法律与争议解决</text>
+      <text class="section-text">
+        本协议的订立、执行、解释及争议的解决均适用中华人民共和国法律。
+      </text>
+      <text class="section-text">
+        如就本协议内容或其执行发生任何争议，双方应首先通过友好协商解决。协商不成的，任何一方均可向开发者所在地有管辖权的人民法院提起诉讼。
+      </text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">10. 联系我们</text>
+      <text class="section-text">
+        如您对本协议有任何疑问、意见或建议，或者需要申请删除账户及数据，您可以通过「我的 → 关于」页面中的联系方式与我们取得联系。我们将尽快处理您的问题。
+      </text>
+    </view>
+
+    <view class="back-btn-wrapper">
+      <button class="back-btn" bindtap="onBack">返回</button>
+    </view>
+
+  </view>
+</view>

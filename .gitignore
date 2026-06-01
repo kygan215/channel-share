@@ -1,0 +1,35 @@
+# ============================================================
+# channel-share — 促销信息共享小程序
+# ============================================================
+
+# 微信小程序配置文件（含 appid，不要上传）
+project.private.config.json
+
+# Node.js 依赖
+node_modules/
+cloudfunctions/*/node_modules/
+
+# Claude Code 配置文件
+.claude/
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 本地数据文件
+data/*.xlsx
+data/*.csv
+
+# 日志
+*.log
+npm-debug.log*
+
+# 云函数本地包
+cloudfunctions/*/*.zip

@@ -1,0 +1,10 @@
+{
+  "name": "channel",
+  "version": "1.0.0",
+  "description": "渠道数据CRUD云函数",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest",
+    "xlsx": "^0.18.5"
+  }
+}

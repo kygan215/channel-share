@@ -1,0 +1,373 @@
+<view class="page">
+
+  <!-- ==================== 手机号验证遮罩 ==================== -->
+  <view wx:if="{{showPhoneAuth}}" class="phone-auth-overlay">
+    <view class="phone-auth-box">
+      <text class="phone-auth-title">验证手机号</text>
+      <text class="phone-auth-desc">请输入你在公司登记的手机号进行验证</text>
+      <input class="phone-auth-input" placeholder="输入手机号" maxlength="11" type="number" value="{{phoneInput}}" bindinput="onPhoneAuthInput" />
+      <button class="phone-auth-btn" bindtap="submitPhoneAuth">验证</button>
+    </view>
+  </view>
+
+  <!-- ==================== 顶部工具栏 ==================== -->
+  <view class="toolbar">
+    <view class="search-row">
+      <text class="search-icon" bindtap="onSearchIconTap">🔍</text>
+      <input
+        class="search-input"
+        placeholder-class="search-ph"
+        placeholder="搜索姓名、电话、微信号、省市区镇"
+        value="{{searchText}}"
+        focus="{{searchFocused}}"
+        bindinput="onSearchInput"
+        bindblur="onSearchBlur"
+        confirm-type="search"
+      />
+      <text wx:if="{{searchText}}" class="search-clear" bindtap="onSearchInput" data-value="">✕</text>
+    </view>
+    <view class="toolbar-btns">
+      <button wx:if="{{canAdd}}" class="btn-add" bindtap="goToAdd">
+        <text class="btn-icon">＋</text>
+        <text>新增</text>
+      </button>
+      <button wx:if="{{canDelete}}" class="btn-batch {{batchMode ? 'active' : ''}}" bindtap="toggleBatchMode">
+        <text>{{batchMode ? '取消' : '批量'}}</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- ==================== 批量操作栏 ==================== -->
+  <view wx:if="{{batchMode}}" class="batch-bar slide-up">
+    <button class="batch-select-all" bindtap="selectAll">全选/取消</button>
+    <text class="batch-count">已选 {{selectedCount}} 条</text>
+    <button class="batch-delete-btn" bindtap="batchDelete">🗑 批量删除</button>
+  </view>
+
+  <!-- ==================== 筛选与排序栏（始终展开） ==================== -->
+  <view class="filter-section">
+    <view class="filter-block">
+      <text class="filter-label">🏷️ 标注</text>
+      <scroll-view class="filter-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+        <view
+          wx:for="{{tagOptions}}"
+          wx:key="*this"
+          class="filter-tag {{selectedTag === (index === 0 ? '' : (index === 1 ? 'blacklist' : 'quality')) ? 'active' : ''}}"
+          data-index="{{index}}"
+          bindtap="onTagSelect"
+        >{{item}}</view>
+      </scroll-view>
+    </view>
+    <view class="filter-block">
+      <text class="filter-label">📍 省份</text>
+      <view class="filter-col">
+        <input
+          class="filter-search-input"
+          placeholder="搜索省份"
+          value="{{provinceFilterSearchText}}"
+          bindinput="onProvinceFilterSearch"
+        />
+        <scroll-view class="filter-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+          <view
+            wx:for="{{displayProvinces}}"
+            wx:key="*this"
+            class="filter-tag {{selectedProvince === item ? 'active' : ''}}"
+            data-value="{{item}}"
+            bindtap="onProvinceSelect"
+          >{{item}}</view>
+        </scroll-view>
+      </view>
+    </view>
+
+    <view class="filter-block">
+      <text class="filter-label">🏙️ 城市</text>
+      <view class="filter-col">
+        <input
+          class="filter-search-input"
+          placeholder="{{selectedProvince === '全部省份' ? '请先选择省份' : '搜索城市'}}"
+          value="{{cityFilterSearchText}}"
+          bindinput="onCityFilterSearch"
+        />
+        <scroll-view class="filter-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+          <view
+            wx:for="{{displayCities}}"
+            wx:key="*this"
+            class="filter-tag {{selectedCity === item ? 'active' : ''}}"
+            data-value="{{item}}"
+            bindtap="onCitySelect"
+          >{{item}}</view>
+        </scroll-view>
+      </view>
+    </view>
+
+    <view class="filter-block">
+      <text class="filter-label">🏘️ 区/镇</text>
+      <view class="filter-col">
+        <input
+          class="filter-search-input"
+          placeholder="{{selectedCity === '全部城市' ? '请先选择城市' : '搜索区/镇'}}"
+          value="{{districtFilterSearchText}}"
+          bindinput="onDistrictFilterSearch"
+        />
+        <scroll-view class="filter-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+          <view
+            wx:for="{{displayDistricts}}"
+            wx:key="*this"
+            class="filter-tag {{selectedDistrict === item ? 'active' : ''}}"
+            data-value="{{item}}"
+            bindtap="onDistrictSelect"
+          >{{item}}</view>
+        </scroll-view>
+      </view>
+    </view>
+
+    <view class="filter-block">
+      <text class="filter-label">🏡 街道/乡镇</text>
+      <view class="filter-col">
+        <input
+          class="filter-search-input"
+          placeholder="输入街道/乡镇名称筛选"
+          value="{{selectedStreet}}"
+          bindinput="onStreetInput"
+        />
+      </view>
+    </view>
+
+    <view class="filter-block">
+      <text class="filter-label">📊 排序</text>
+      <scroll-view class="filter-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+        <view
+          wx:for="{{sortOptions}}"
+          wx:key="*this"
+          class="filter-tag {{sortIndex === index ? 'active' : ''}}"
+          data-index="{{index}}"
+          bindtap="onSortTabTap"
+        >{{item}}</view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- ==================== 骨架屏加载状态 ==================== -->
+  <view wx:if="{{loading && !refreshing}}" class="skeleton-list">
+    <view wx:for="{{[1,2,3]}}" wx:key="*this" class="skeleton-card">
+      <view class="skeleton-line skeleton-avatar"></view>
+      <view class="skeleton-col">
+        <view class="skeleton-line skeleton-name"></view>
+        <view class="skeleton-line skeleton-sub"></view>
+      </view>
+      <view class="skeleton-line skeleton-phone"></view>
+      <view class="skeleton-line skeleton-loc"></view>
+    </view>
+  </view>
+
+  <!-- ==================== 列表内容 ==================== -->
+  <scroll-view wx:else scroll-y class="list-scroll" refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
+
+    <view wx:for="{{groupedData}}" wx:key="province" class="group slide-up">
+
+      <view class="group-title">
+        <view class="group-title-left">
+          <text class="group-title-icon">📍</text>
+          <text>{{item.province}}</text>
+        </view>
+        <view class="group-count">{{item.items.length}} 人</view>
+      </view>
+
+      <view wx:for="{{item.items}}" wx:for-item="sub" wx:key="id" class="card fade-in">
+
+        <!-- ===== 卡片头部：姓名 + 状态 + 城市 ===== -->
+        <view class="card-header">
+          <view class="card-title-row">
+            <view wx:if="{{batchMode}}" class="card-checkbox {{selectedIds[sub.id] ? 'checked' : ''}}" data-id="{{sub.id}}" bindtap="toggleSelect">
+              <text wx:if="{{selectedIds[sub.id]}}">✅</text>
+              <text wx:else>○</text>
+            </view>
+            <view class="card-avatar">{{sub._avatarChar}}</view>
+            <view class="card-name-col">
+              <text class="card-name">{{sub.name || '未命名'}}</text>
+              <view class="card-subtitle-row">
+                <text wx:if="{{sub.blacklisted}}" class="card-badge badge-black">⚫ 黑名单</text>
+                <text wx:elif="{{sub.quality}}" class="card-badge badge-quality">⭐ 优质</text>
+                <text wx:if="{{sub.hired}}" class="card-badge badge-active">✅ 合作中</text>
+                <text wx:elif="{{sub._hireStatus === 'hired_before'}}" class="card-badge badge-hired">已聘用过</text>
+                <text wx:if="{{sub.healthCert && sub.healthCert.status === 'approved'}}" class="card-badge badge-approved">✅ 健康证</text>
+                <text wx:elif="{{sub.healthCert && sub.healthCert.status === 'pending'}}" class="card-badge badge-pending">⏳ 健康证</text>
+                <text class="card-city-tag">📍{{sub.city}}</text>
+                <text class="card-sn-inline">#{{sub.sn}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- ===== 卡片信息 ===== -->
+        <view class="card-body">
+
+          <view class="info-row">
+            <text class="info-icon">📞</text>
+            <text class="info-value phone">{{sub.phone || '暂无电话'}}</text>
+            <button wx:if="{{sub.phone}}" class="copy-btn" data-phone="{{sub.phone}}" bindtap="copyPhone">复制</button>
+          </view>
+
+          <view wx:if="{{sub.wechat}}" class="info-row">
+            <text class="info-icon">💬</text>
+            <text class="info-value">{{sub.wechat}}</text>
+            <button class="copy-btn" data-wechat="{{sub.wechat}}" bindtap="copyWechat">复制</button>
+          </view>
+
+          <view wx:if="{{sub.age}}" class="info-row">
+            <text class="info-icon">🎂</text>
+            <text class="info-value">年龄：{{sub.age}}岁</text>
+          </view>
+
+          <view wx:if="{{sub.province}}" class="info-row">
+            <text class="info-icon">📍</text>
+            <text class="info-value location">{{sub.province}} · {{sub.city}}{{sub.district ? ' · ' + sub.district : ''}}{{sub.street ? ' · ' + sub.street : ''}}</text>
+          </view>
+
+          <view wx:if="{{sub._detailTags && sub._detailTags.length > 0}}" class="profile-summary">
+            <text wx:for="{{sub._detailTags}}" wx:key="*this" class="profile-chip">{{item}}</text>
+          </view>
+
+          <view wx:if="{{sub.recorderNickname}}" class="recorder-info">
+            <text class="recorder-text">👤 由 {{sub.recorderNickname}}{{sub.recorderPosition ? ' · ' + sub.recorderPosition : ''}} 添加</text>
+          </view>
+          <view wx:if="{{sub.remark}}" class="remark-info">
+            <text class="remark-text">📝 备注：{{sub.remark}}</text>
+          </view>
+
+          <!-- ===== KA 系统经验 ===== -->
+          <view wx:if="{{sub.kaTags && sub.kaTags.length > 0}}" class="ka-section">
+            <view class="ka-tag-list">
+              <text wx:for="{{sub.kaTags}}" wx:key="*this" class="ka-tag">{{item}}</text>
+            </view>
+          </view>
+
+          <!-- ===== 底薪 ===== -->
+          <view wx:if="{{sub.baseSalary}}" class="salary-info">
+            <text class="salary-text">💰 底薪：{{sub.baseSalary}}元/天</text>
+          </view>
+
+          <!-- ===== 健康证 ===== -->
+          <view class="healthcert-section">
+            <view class="healthcert-row">
+              <text class="healthcert-label">✅ 健康证</text>
+              <text wx:if="{{!sub.healthCert || sub.healthCert.status === 'none'}}" class="healthcert-status status-none">未上传</text>
+              <text wx:elif="{{sub.healthCert.status === 'pending'}}" class="healthcert-status status-pending">⏳ 待审核</text>
+              <text wx:elif="{{sub.healthCert.status === 'approved'}}" class="healthcert-status status-approved">✅ 已认证</text>
+              <text wx:elif="{{sub.healthCert.status === 'rejected'}}" class="healthcert-status status-rejected">❌ 未通过</text>
+            </view>
+            <view wx:if="{{sub.healthCert && sub.healthCert.status === 'rejected' && sub.healthCert.rejectReason}}" class="healthcert-reject-reason">
+              原因：{{sub.healthCert.rejectReason}}
+            </view>
+            <view class="healthcert-actions">
+              <button class="healthcert-btn btn-upload" data-id="{{sub.id}}" bindtap="uploadHealthCert">📤 上传</button>
+              <button wx:if="{{sub.healthCert && sub.healthCert.fileId}}" class="healthcert-btn btn-view" data-fileid="{{sub.healthCert.fileId}}" bindtap="viewHealthCert">👁️ 查看</button>
+              <button wx:if="{{sub.healthCert && sub.healthCert.status === 'pending' && canReview}}" class="healthcert-btn btn-review" data-id="{{sub.id}}" bindtap="openReview">✅ 审核</button>
+            </view>
+          </view>
+        </view>
+
+        <!-- ===== 评论操作栏 ===== -->
+        <view class="card-actions" wx:if="{{canPromoter}}">
+          <button
+            class="action-btn btn-comment-toggle {{commentExpanded[sub.id] ? 'active' : ''}}"
+            data-id="{{sub.id}}"
+            bindtap="toggleCommentInput"
+          >💬 评论{{sub.comments.length ? ' (' + sub.comments.length + ')' : ''}}</button>
+        </view>
+
+        <!-- ===== 编辑/删除行 ===== -->
+        <view class="card-actions" wx:if="{{canEdit || canDelete}}">
+          <button wx:if="{{canEdit}}" class="action-btn btn-edit" data-id="{{sub.id}}" bindtap="editItem">
+            <text class="action-icon">✏️</text>
+            <text>编辑</text>
+          </button>
+          <button wx:if="{{canDelete}}" class="action-btn btn-delete" data-id="{{sub.id}}" bindtap="deleteSingle">
+            <text class="action-icon">🗑️</text>
+            <text>删除</text>
+          </button>
+        </view>
+
+        <!-- ===== 评论区域 ===== -->
+        <view wx:if="{{sub.comments.length > 0}}" class="comments-section">
+          <view wx:for="{{sub.comments}}" wx:for-item="c" wx:key="id" class="comment-item">
+            <view class="comment-avatar">{{c._avatarChar}}</view>
+            <view class="comment-body">
+              <view class="comment-header">
+                <text class="comment-nickname">{{c.nickname}}</text>
+                <text class="comment-time">{{c.time}}</text>
+                <button
+                  wx:if="{{c.userId === currentUserId}}"
+                  class="comment-del"
+                  data-id="{{sub.id}}"
+                  data-comment-id="{{c.id}}"
+                  bindtap="deleteComment"
+                >✕</button>
+              </view>
+              <view class="comment-content">{{c.content}}</view>
+            </view>
+          </view>
+        </view>
+
+        <!-- ===== 评论输入（可折叠） ===== -->
+        <view wx:if="{{commentExpanded[sub.id]}}" class="comment-input-area">
+          <view class="quick-tags">
+            <view
+              wx:for="{{quickTags}}"
+              wx:key="*this"
+              class="quick-tag"
+              data-id="{{sub.id}}"
+              data-tag="{{item}}"
+              bindtap="onQuickTagTap"
+            >{{item}}</view>
+          </view>
+          <view class="comment-input-row">
+            <input
+              class="comment-input"
+              placeholder="写下对 {{sub.name}} 的评价..."
+              value="{{commentTexts[sub.id] || ''}}"
+              data-id="{{sub.id}}"
+              bindinput="onCommentInput"
+              confirm-type="send"
+            />
+            <button class="send-btn" data-id="{{sub.id}}" bindtap="addComment">发送</button>
+          </view>
+        </view>
+
+      </view>
+    </view>
+
+    <!-- ===== 空状态 ===== -->
+    <view wx:if="{{groupedData.length === 0}}" class="empty-state">
+      <view class="empty-icon">📭</view>
+      <text class="empty-title">暂无数据</text>
+      <text class="empty-desc">还没有促销员信息，点击「新增」添加</text>
+    </view>
+
+  </scroll-view>
+
+  <!-- ==================== 健康证审核弹窗 ==================== -->
+  <view wx:if="{{reviewModal}}" class="review-overlay" bindtap="closeReview">
+    <view class="review-modal" catchtap="">
+      <view class="review-header">
+        <text class="review-title">健康证审核</text>
+        <text class="review-close" bindtap="closeReview">✕</text>
+      </view>
+
+      <view wx:if="{{reviewRecord}}" class="review-body">
+        <view class="review-name">{{reviewRecord.name}}</view>
+
+        <image class="review-image" src="{{reviewCertUrl}}" mode="widthFix" bindtap="viewHealthCert" data-fileid="{{reviewCertUrl}}" />
+
+        <view class="review-actions">
+          <button class="review-btn btn-approve" bindtap="approveHealthCert">✅ 通过</button>
+          <button class="review-btn btn-reject" bindtap="rejectHealthCert">❌ 驳回</button>
+        </view>
+
+        <view class="review-reject-row">
+          <input class="review-reject-input" placeholder="驳回原因（选填）" value="{{rejectReason}}" bindinput="onRejectReasonInput" />
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

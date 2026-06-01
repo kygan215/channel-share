@@ -39,7 +39,7 @@
     "minifyWXML": true,
     "localPlugins": false,
     "disableUseStrict": false,
-    "useCompilerPlugins": false,
+    "useCompilerPlugins": [],
     "condition": false,
     "swc": false,
     "disableSWC": true

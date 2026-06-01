@@ -1,519 +1,517 @@
 /* =========================================================== */
-/* 渠道列表首页样式                                            */
+/* 首页 - 品牌感设计                                            */
 /* =========================================================== */
 
-/* ---- 页面容器：上下结构撑满全屏 ---- */
 .page {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+  padding: 0 0 40rpx;
+  min-height: 100vh;
   box-sizing: border-box;
 }
 
 /* =========================================================== */
-/* 1. 顶部工具栏                                               */
+/* 1. 顶部品牌区                                               */
 /* =========================================================== */
 
-.toolbar {
-  display: flex;
-  align-items: center;
-  padding: 16rpx 20rpx;
-  background: #fff;
-  gap: 16rpx;
-}
-
-/* 搜索框：灰底胶囊形 */
-.search-box {
-  flex: 1;
-  height: 72rpx;
-  background: #f5f5f5;
-  border-radius: 36rpx;
-  padding: 0 28rpx;
-  display: flex;
-  align-items: center;
-}
-
-.search-box-input {
-  width: 100%;
-  font-size: 28rpx;
-  color: #333;
-}
-
-/* 操作按钮组 */
-.toolbar-btns {
-  display: flex;
-  gap: 12rpx;
-  flex-shrink: 0;  /* 不压缩，确保按钮完整显示 */
-}
-
-/* 新增按钮：绿色 */
-.btn-add {
-  height: 60rpx;
-  line-height: 60rpx;
-  padding: 0 24rpx;
-  background: #07c160;
-  color: #fff;
-  border-radius: 30rpx;
-  font-size: 26rpx;
-}
-
-/* 导出按钮：蓝色 */
-.btn-export {
-  height: 60rpx;
-  line-height: 60rpx;
-  padding: 0 24rpx;
-  background: #1989fa;
-  color: #fff;
-  border-radius: 30rpx;
-  font-size: 26rpx;
-}
-
-/* =========================================================== */
-/* 筛选与排序栏                                               */
-/* =========================================================== */
-
-.filter-bar {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-  padding: 16rpx 20rpx;
-  background: #fff;
-  border-top: 2rpx solid #eee;
-}
-
-.filter-search {
-  width: 100%;
-  height: 64rpx;
-  background: #f5f5f5;
-  border-radius: 32rpx;
-  padding: 0 28rpx;
-  font-size: 26rpx;
-  color: #333;
-  box-sizing: border-box;
-}
-
-.filter-scroll {
-  display: flex;
-  flex-direction: row;
-  white-space: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.filter-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.filter-tab {
-  display: inline-flex;
-  align-items: center;
-  height: 56rpx;
-  padding: 0 24rpx;
-  margin-right: 10rpx;
-  background: #f5f5f5;
-  border-radius: 28rpx;
-  font-size: 24rpx;
-  color: #666;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.filter-tab.active {
-  background: #07c160;
-  color: #fff;
-  font-weight: 500;
-}
-
-/* =========================================================== */
-/* 3. 滚动列表区域                                             */
-/* =========================================================== */
-
-.list-scroll {
-  flex: 1;              /* 占满剩余高度 */
-  overflow-y: auto;      /* 允许纵向滚动 */
-  -webkit-overflow-scrolling: touch;
-}
-
-/* =========================================================== */
-/* 4. 省份分组                                               */
-/* =========================================================== */
-
-.group {
-  margin: 20rpx 20rpx 0;
-}
-
-/* 组标题：左侧绿色竖条装饰 */
-.group-title {
-  display: flex;
-  align-items: center;
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
-  padding: 12rpx 0;
-  border-left: 6rpx solid #07c160;
-  padding-left: 16rpx;
-  margin-bottom: 12rpx;
-}
-
-/* 组内记录数 */
-.group-count {
-  font-size: 24rpx;
-  color: #999;
-  font-weight: 400;
-  margin-left: 12rpx;
-}
-
-/* =========================================================== */
-/* 5. 渠道卡片                                                 */
-/* =========================================================== */
-
-.card {
-  background: #fff;
-  border-radius: 12rpx;
-  margin-bottom: 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04); /* 浅阴影 */
+.hero {
+  position: relative;
+  background: linear-gradient(135deg, #07c160 0%, #06ad56 40%, #059e4e 100%);
+  padding: 48rpx 32rpx 56rpx;
   overflow: hidden;
 }
 
-/* ---- 卡片顶部：省份·城市 + 序号 ---- */
-.card-header {
+.hero-bg-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.hero-bg-pattern::before {
+  content: '';
+  position: absolute;
+  top: -120rpx;
+  right: -60rpx;
+  width: 400rpx;
+  height: 400rpx;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+
+.hero-bg-pattern::after {
+  content: '';
+  position: absolute;
+  bottom: -160rpx;
+  left: -80rpx;
+  width: 500rpx;
+  height: 500rpx;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+}
+
+.hero-content {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-brand {
+  display: flex;
   align-items: center;
-  padding: 20rpx 24rpx 0;
+  gap: 20rpx;
 }
 
-.card-title {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
-}
-
-/* 序号徽标：灰底圆角 */
-.card-sn {
-  font-size: 26rpx;
-  color: #999;
-  background: #f5f5f5;
-  padding: 4rpx 16rpx;
+.hero-logo {
+  width: 88rpx;
+  height: 88rpx;
   border-radius: 20rpx;
+  background: rgba(255,255,255,0.95);
+  padding: 8rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.1);
 }
 
-/* ---- 卡片中部：信息行 ---- */
-.card-body {
-  padding: 16rpx 24rpx 12rpx;
+.hero-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
 }
 
-/* 每一行信息 */
-.info-row {
+.hero-title {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 1rpx;
+}
+
+.hero-desc {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 0.5rpx;
+}
+
+.hero-export-btn {
   display: flex;
   align-items: center;
-  margin-bottom: 10rpx;
-  font-size: 28rpx;
-  line-height: 1.5;
-}
-
-/* 字段标签（灰色） */
-.info-label {
-  color: #999;
+  gap: 6rpx;
+  padding: 14rpx 24rpx;
+  background: rgba(255,255,255,0.2);
+  border-radius: var(--radius-round);
   flex-shrink: 0;
-  width: 4.5em;
+  margin-top: 8rpx;
+  border: 1rpx solid rgba(255,255,255,0.15);
 }
-
-/* 字段值 */
-.info-value {
-  color: #333;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.hero-export-btn:active {
+  background: rgba(255,255,255,0.35);
 }
-
-/* 电话值（蓝色突出） */
-.info-value.phone {
-  color: #1989fa;
-}
-
-/* 内联复制按钮 */
-.copy-btn-sm {
-  flex-shrink: 0;
-  height: 48rpx;
-  line-height: 48rpx;
-  padding: 0 18rpx;
-  background: #ecf5ff;  /* 浅蓝底 */
-  color: #1989fa;        /* 蓝色字 */
-  border-radius: 6rpx;
+.hero-export-icon {
   font-size: 24rpx;
-  margin-left: 12rpx;
 }
-
-/* =========================================================== */
-/* 6. 操作栏                                                 */
-/* =========================================================== */
-
-.action-bar {
-  display: flex;
-  padding: 10rpx 16rpx 14rpx;
-  gap: 8rpx;
-}
-
-/* 操作按钮：均分宽度 */
-.action-btn {
-  flex: 1;
-  height: 58rpx;
-  line-height: 58rpx;
-  text-align: center;
-  border-radius: 8rpx;
-  font-size: 24rpx;
-  padding: 0;
-  background: #f7f7f7;
-  color: #666;
-}
-
-/* 点赞高亮状态：红色 */
-.action-btn.liked {
-  background: #fef0f0;
-  color: #e64340;
-}
-
-/* 删除按钮：红色 */
-.btn-delete {
-  background: #fef0f0;
-  color: #e64340;
-}
-
-/* =========================================================== */
-/* 7. 展开区域（评论 / 促销员）                                */
-/* =========================================================== */
-
-.section {
-  padding: 0 24rpx 20rpx;
-}
-
-/* 分割线 */
-.section-divider {
-  height: 2rpx;
-  background: #f0f0f0;
-  margin-bottom: 16rpx;
-}
-
-/* 区域标题 */
-.section-title {
-  font-size: 26rpx;
+.hero-export-text {
+  font-size: 22rpx;
+  color: #fff;
   font-weight: 500;
-  color: #666;
-  margin-bottom: 12rpx;
 }
 
-/* 空提示文字 */
-.empty-tip {
-  font-size: 24rpx;
-  color: #ccc;
-  text-align: center;
-  padding: 16rpx 0;
-}
 
 /* =========================================================== */
-/* 8. 评论相关                                                 */
+/* 2. 数据概览栏                                               */
 /* =========================================================== */
 
-/* 单条评论 */
-.comment-item {
-  padding: 10rpx 0;
-  border-bottom: 2rpx solid #f5f5f5;
-}
-
-.comment-item:last-child {
-  border-bottom: none;  /* 最后一条不显示底部分割线 */
-}
-
-/* 评论头部：昵称 + 时间 + 删除按钮 */
-.comment-header {
+.stats-bar {
   display: flex;
   align-items: center;
-  gap: 12rpx;
-  margin-bottom: 4rpx;
+  background: #fff;
+  margin: -36rpx 28rpx 0;
+  border-radius: 24rpx;
+  padding: 28rpx 8rpx;
+  box-shadow: 0 8rpx 32rpx rgba(7, 193, 96, 0.12);
+  position: relative;
+  z-index: 2;
 }
 
-/* 昵称（绿色） */
-.comment-nickname {
-  font-size: 24rpx;
-  font-weight: 500;
-  color: #07c160;
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
 }
 
-/* 时间（浅灰） */
-.comment-time {
+.stat-value {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: var(--gray-8);
+}
+
+.stat-label {
   font-size: 20rpx;
-  color: #bbb;
-  flex: 1;
-}
-
-/* 删除评论按钮 */
-.comment-del {
-  flex-shrink: 0;
-  width: 36rpx;
-  height: 36rpx;
-  line-height: 36rpx;
-  text-align: center;
-  background: transparent;
-  color: #ccc;
-  font-size: 22rpx;
-  padding: 0;
-}
-
-/* 快捷评论标签 */
-.quick-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10rpx;
-  margin-top: 14rpx;
-}
-
-.quick-tag {
-  height: 52rpx;
-  line-height: 52rpx;
-  padding: 0 20rpx;
-  background: #ebf9f1;
-  color: #07c160;
-  border-radius: 26rpx;
-  font-size: 22rpx;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.quick-tag:active {
-  opacity: 0.7;
-}
-
-/* 评论内容 */
-.comment-content {
-  font-size: 26rpx;
-  color: #333;
-  line-height: 1.5;
-}
-
-/* 评论输入区域 */
-.comment-input-area {
-  display: flex;
-  gap: 12rpx;
-  margin-top: 14rpx;
-  align-items: center;
-}
-
-/* 评论输入框：胶囊形 */
-.comment-input {
-  flex: 1;
-  height: 64rpx;
-  background: #f5f5f5;
-  border-radius: 32rpx;
-  padding: 0 24rpx;
-  font-size: 26rpx;
-  color: #333;
-}
-
-/* 发送按钮：绿色 */
-.send-btn {
-  flex-shrink: 0;
-  height: 64rpx;
-  line-height: 64rpx;
-  padding: 0 28rpx;
-  background: #07c160;
-  color: #fff;
-  border-radius: 32rpx;
-  font-size: 26rpx;
-}
-
-/* =========================================================== */
-/* 9. 促销员相关                                               */
-/* =========================================================== */
-
-/* 促销员列表项 */
-.promoter-item {
-  display: flex;
-  align-items: center;
-  padding: 12rpx 0;
-  border-bottom: 2rpx solid #f5f5f5;
-  gap: 12rpx;
-}
-
-.promoter-item:last-child {
-  border-bottom: none;
-}
-
-/* 姓名（加粗） */
-.promoter-name {
-  font-size: 28rpx;
+  color: var(--gray-5);
   font-weight: 500;
-  color: #333;
 }
 
-/* 电话（灰色） */
-.promoter-phone {
-  font-size: 26rpx;
-  color: #999;
+.stat-divider {
+  width: 2rpx;
+  height: 52rpx;
+  background: var(--gray-3);
 }
 
-/* 删除促销员按钮 */
-.promoter-del {
-  margin-left: auto;     /* 推至最右 */
-  flex-shrink: 0;
-  width: 36rpx;
-  height: 36rpx;
-  line-height: 36rpx;
-  text-align: center;
-  background: transparent;
-  color: #ccc;
-  font-size: 22rpx;
-  padding: 0;
+
+/* =========================================================== */
+/* 3. 功能菜单网格                                             */
+/* =========================================================== */
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28rpx;
+  padding: 36rpx 28rpx 0;
 }
 
-/* 添加促销员表单 */
-.promoter-form {
+.menu-card {
+  background: #fff;
+  border-radius: 28rpx;
+  padding: 44rpx 28rpx;
   display: flex;
-  gap: 10rpx;
-  margin-top: 14rpx;
+  flex-direction: column;
   align-items: center;
+  gap: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
+  border: 2rpx solid var(--gray-2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  animation: cardIn 0.5s ease-out both;
 }
 
-/* 输入框 */
-.promoter-input {
-  flex: 1;
-  height: 60rpx;
-  background: #f5f5f5;
-  border-radius: 8rpx;
-  padding: 0 16rpx;
-  font-size: 26rpx;
-  color: #333;
-  min-width: 0;
+/* 卡片入场动画 */
+.menu-card:nth-child(1) { animation-delay: 0.05s; }
+.menu-card:nth-child(2) { animation-delay: 0.12s; }
+.menu-card:nth-child(3) { animation-delay: 0.19s; }
+.menu-card:nth-child(4) { animation-delay: 0.26s; }
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(30rpx); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* 电话输入框稍微宽一点 */
-.promoter-input.phone {
-  flex: 1.2;
+.menu-card:active {
+  transform: scale(0.96);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
 }
 
-/* 添加按钮：绿色 */
-.add-promoter-btn {
-  flex-shrink: 0;
-  height: 60rpx;
-  line-height: 60rpx;
-  padding: 0 24rpx;
-  background: #07c160;
-  color: #fff;
-  border-radius: 8rpx;
-  font-size: 26rpx;
+/* 卡片顶部装饰条 */
+.menu-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70rpx;
+  height: 6rpx;
+  border-radius: 0 0 8rpx 8rpx;
 }
 
-/* =========================================================== */
-/* 10. 加载状态 & 空状态                                      */
-/* =========================================================== */
+.menu-card:nth-child(1)::before { background: var(--primary); }
+.menu-card:nth-child(2)::before { background: #1989fa; }
+.menu-card:nth-child(3)::before { background: #a855f7; }
+.menu-card:nth-child(4)::before { background: #ff976a; }
 
-.loading,
-.empty {
+.menu-card-icon {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 28rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 80rpx 0;
-  font-size: 28rpx;
-  color: #999;
+  font-size: 52rpx;
+  box-shadow: 0 6rpx 20rpx rgba(0,0,0,0.06);
+  transition: all 0.3s;
+}
+
+.icon-query {
+  background: linear-gradient(135deg, #ebf9f1, #d4f5e3);
+}
+.icon-add {
+  background: linear-gradient(135deg, #e8f5ff, #d0edff);
+}
+.icon-import {
+  background: linear-gradient(135deg, #f3e8ff, #e8d5ff);
+}
+.icon-manage {
+  background: linear-gradient(135deg, #fff3e0, #ffe8cc);
+}
+
+.menu-card-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--gray-8);
+}
+
+.menu-card-desc {
+  font-size: 22rpx;
+  color: var(--gray-5);
+  text-align: center;
+  line-height: 1.4;
+}
+
+
+/* =========================================================== */
+/* 4. 隐私协议弹窗                                             */
+/* =========================================================== */
+
+.privacy-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: maskIn 0.3s ease-out;
+}
+
+@keyframes maskIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.privacy-dialog {
+  width: 620rpx;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: dialogSlideUp 0.35s ease-out;
+  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.2);
+}
+
+@keyframes dialogSlideUp {
+  from { opacity: 0; transform: translateY(60rpx) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.privacy-header {
+  padding: 40rpx 36rpx 0;
+  text-align: center;
+}
+
+.privacy-title {
+  font-size: var(--font-3xl);
+  font-weight: 700;
+  color: var(--gray-8);
+}
+
+.privacy-body {
+  flex: 1;
+  padding: 28rpx 36rpx 0;
+  overflow-y: auto;
+}
+
+.privacy-intro {
+  font-size: var(--font-md);
+  color: var(--gray-7);
+  line-height: 1.6;
+  margin-bottom: 20rpx;
+}
+
+.privacy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.privacy-item {
+  font-size: var(--font-sm);
+  color: var(--gray-7);
+  line-height: 1.5;
+  padding-left: 8rpx;
+}
+
+.privacy-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  padding: 16rpx 0;
+  margin-bottom: 4rpx;
+}
+
+.privacy-link-text {
+  font-size: var(--font-md);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.privacy-link-arrow {
+  font-size: 32rpx;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.hover-opacity {
+  opacity: 0.7;
+}
+
+.privacy-footer {
+  padding: 24rpx 36rpx 40rpx;
+  border-top: 2rpx solid var(--gray-2);
+}
+
+.privacy-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 12rpx 0 20rpx;
+}
+
+.checkbox-box {
+  width: 36rpx;
+  height: 36rpx;
+  border: 2rpx solid var(--gray-4);
+  border-radius: 6rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.checkbox-checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.checkbox-icon {
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
+.checkbox-label {
+  font-size: var(--font-md);
+  color: var(--gray-7);
+  line-height: 1.4;
+}
+
+.checkbox-highlight {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.privacy-btn {
+  width: 100%;
+  height: 88rpx;
+  border-radius: var(--radius-round);
+  font-size: var(--font-xl);
+  font-weight: 600;
+  color: #fff;
+  background: var(--gray-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+}
+
+.privacy-btn-active {
+  background: var(--primary-gradient);
+  box-shadow: 0 6rpx 20rpx rgba(7, 193, 96, 0.35);
+}
+
+.privacy-btn-active:active {
+  opacity: 0.9;
+  transform: scale(0.97);
+}
+
+
+/* =========================================================== */
+/* 5. 权限验证门（访问受限）                                    */
+/* =========================================================== */
+
+.auth-gate {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gray-1);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: maskIn 0.3s ease-out;
+}
+
+.auth-gate-card {
+  width: 560rpx;
+  background: #fff;
+  border-radius: var(--radius-xl);
+  padding: 60rpx 48rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.1);
+  animation: dialogSlideUp 0.35s ease-out;
+}
+
+.auth-gate-icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}
+
+.auth-gate-title {
+  font-size: var(--font-4xl);
+  font-weight: 700;
+  color: var(--gray-8);
+  margin-bottom: 16rpx;
+}
+
+.auth-gate-desc {
+  font-size: var(--font-lg);
+  color: var(--gray-7);
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 8rpx;
+}
+
+.auth-gate-hint {
+  font-size: var(--font-md);
+  color: var(--gray-6);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.auth-gate-divider {
+  width: 100%;
+  height: 2rpx;
+  background: var(--gray-3);
+  margin: 32rpx 0 24rpx;
+}
+
+.auth-gate-contact {
+  width: 100%;
+}
+
+.auth-gate-contact-label {
+  font-size: var(--font-sm);
+  color: var(--gray-6);
+  display: block;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+.auth-gate-contact-step {
+  font-size: var(--font-sm);
+  color: var(--gray-6);
+  display: block;
+  line-height: 1.8;
+  padding-left: 8rpx;
 }

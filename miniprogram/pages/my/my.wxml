@@ -1,0 +1,231 @@
+<view class="page">
+
+  <!-- ==================== 品牌头 ==================== -->
+  <view class="brand-header">
+    <view class="brand-header-bg"></view>
+    <image class="brand-header-logo" src="/images/logo.png" mode="aspectFit" />
+    <text class="brand-header-name">促销信息共享</text>
+  </view>
+
+  <!-- ==================== 用户资料卡 ==================== -->
+  <view class="profile-card">
+    <view class="profile-avatar-wrap" bindtap="{{isLoggedIn ? 'changeAvatar' : ''}}">
+      <image wx:if="{{avatarUrl}}" class="profile-avatar" src="{{avatarUrl}}" />
+      <view wx:else class="profile-avatar profile-avatar-placeholder">{{nickname ? nickname.slice(0, 1) : '?'}}</view>
+      <view wx:if="{{isLoggedIn}}" class="profile-avatar-badge">已认证</view>
+      <view wx:if="{{isLoggedIn}}" class="profile-avatar-edit">更换</view>
+    </view>
+    <view class="profile-body">
+      <view class="profile-name-row" bindtap="{{isLoggedIn ? 'editNickname' : ''}}">
+        <text class="profile-name">{{nickname || '未登录'}}</text>
+        <text wx:if="{{isLoggedIn}}" class="profile-edit-badge">编辑</text>
+      </view>
+      <text class="profile-subtitle">{{isLoggedIn ? '已登录' : '点击下方按钮创建账号'}}</text>
+      <view wx:if="{{isLoggedIn && position}}" class="profile-tags">
+        <text class="profile-tag">💼 {{position}}</text>
+      </view>
+      <view wx:if="{{isLoggedIn && (province || city || district)}}" class="profile-tags">
+        <text class="profile-tag">📍 {{province}}{{city ? ' · ' + city : ''}}{{district ? ' · ' + district : ''}}</text>
+      </view>
+    </view>
+    <button wx:if="{{!isLoggedIn && !showSetup}}" class="profile-login-btn" bindtap="startCreateAccount">创建账号</button>
+  </view>
+
+  <!-- ==================== 创建账号表单 ==================== -->
+  <view wx:if="{{showSetup}}" class="setup-card slide-up">
+    <view class="setup-header">
+      <image class="setup-logo" src="/images/logo.png" mode="aspectFit" />
+      <text class="setup-title">创建个人账号</text>
+      <text class="setup-desc">完善你的信息，开始使用</text>
+    </view>
+
+    <view class="setup-avatar-area">
+      <button class="setup-avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image wx:if="{{setupAvatarUrl}}" class="setup-avatar" src="{{setupAvatarUrl}}" />
+        <view wx:else class="setup-avatar setup-avatar-empty">📷</view>
+      </button>
+      <text class="setup-avatar-hint">点击选择微信头像</text>
+    </view>
+
+    <view class="setup-field">
+      <text class="setup-label">👤 昵称</text>
+      <input
+        class="setup-input"
+        type="nickname"
+        placeholder="输入或使用微信昵称"
+        value="{{setupNickname}}"
+        bindinput="onSetupNicknameInput"
+        bindblur="onSetupNicknameBlur"
+      />
+    </view>
+
+    <view class="setup-field">
+      <text class="setup-label">💼 职位 *</text>
+      <input
+        class="setup-input"
+        placeholder="输入你的职位（必填）"
+        value="{{setupPosition}}"
+        bindinput="onSetupPositionInput"
+      />
+    </view>
+
+    <view class="setup-field">
+      <text class="setup-label">📍 省份 *</text>
+      <picker
+        range="{{setupProvinceList}}"
+        value="{{setupProvinceIndex < 0 ? 0 : setupProvinceIndex}}"
+        bindchange="onSetupRegionChange"
+      >
+        <view class="setup-input setup-picker">
+          <text wx:if="{{setupRegion}}">{{setupRegion}}</text>
+          <text wx:else class="picker-ph">选择省份（必填）</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="setup-field" wx:if="{{setupCityList.length > 0}}">
+      <text class="setup-label">🏙️ 城市</text>
+      <picker
+        range="{{setupCityList}}"
+        value="{{setupCityIndex < 0 ? 0 : setupCityIndex}}"
+        bindchange="onSetupCityChange"
+      >
+        <view class="setup-input setup-picker">
+          <text wx:if="{{setupCity}}">{{setupCity}}</text>
+          <text wx:else class="picker-ph">选择城市（选填）</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="setup-field" wx:if="{{setupDistrictList.length > 0}}">
+      <text class="setup-label">🏘️ 区/镇</text>
+      <picker
+        range="{{setupDistrictList}}"
+        value="{{setupDistrictIndex < 0 ? 0 : setupDistrictIndex}}"
+        bindchange="onSetupDistrictChange"
+      >
+        <view class="setup-input setup-picker">
+          <text wx:if="{{setupDistrict}}">{{setupDistrict}}</text>
+          <text wx:else class="picker-ph">选择区/镇（选填）</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="setup-actions">
+      <button class="setup-btn setup-btn-cancel" bindtap="cancelCreateAccount">取消</button>
+      <button class="setup-btn setup-btn-confirm" bindtap="confirmCreateAccount">完成创建</button>
+    </view>
+  </view>
+
+  <!-- ==================== 区域编辑弹窗 ==================== -->
+  <view wx:if="{{showEditRegion}}" class="modal-overlay" bindtap="cancelEditRegion">
+    <view class="modal-card" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">修改区域</text>
+      </view>
+
+      <picker
+        range="{{editRegionList}}"
+        value="{{editRegionIndex < 0 ? 0 : editRegionIndex}}"
+        bindchange="onEditRegionChange"
+      >
+        <view class="modal-field">
+          <text wx:if="{{editRegionValue}}">{{editRegionValue}}</text>
+          <text wx:else class="picker-ph">选择省份</text>
+        </view>
+      </picker>
+
+      <picker
+        wx:if="{{editCityList.length > 0}}"
+        range="{{editCityList}}"
+        value="{{editCityIndex < 0 ? 0 : editCityIndex}}"
+        bindchange="onEditCityChange"
+      >
+        <view class="modal-field">
+          <text wx:if="{{editCityValue}}">{{editCityValue}}</text>
+          <text wx:else class="picker-ph">选择城市</text>
+        </view>
+      </picker>
+
+      <picker
+        wx:if="{{editDistrictList.length > 0}}"
+        range="{{editDistrictList}}"
+        value="{{editDistrictIndex < 0 ? 0 : editDistrictIndex}}"
+        bindchange="onEditDistrictChange"
+      >
+        <view class="modal-field">
+          <text wx:if="{{editDistrictValue}}">{{editDistrictValue}}</text>
+          <text wx:else class="picker-ph">选择区/镇</text>
+        </view>
+      </picker>
+
+      <view class="modal-actions">
+        <button class="modal-btn modal-btn-cancel" bindtap="cancelEditRegion">取消</button>
+        <button class="modal-btn modal-btn-confirm" bindtap="confirmEditRegion">确定</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 功能菜单 ==================== -->
+  <view class="menu-group">
+    <view wx:if="{{isLoggedIn}}" class="menu-item" bindtap="editPosition">
+      <text class="menu-item-icon">💼</text>
+      <view class="menu-item-body">
+        <text class="menu-item-label">职位</text>
+        <text class="menu-item-value">{{position || '未设置'}}</text>
+      </view>
+      <text class="menu-item-arrow">›</text>
+    </view>
+
+    <view wx:if="{{isLoggedIn}}" class="menu-item" bindtap="showEditRegion">
+      <text class="menu-item-icon">📍</text>
+      <view class="menu-item-body">
+        <text class="menu-item-label">区域</text>
+        <text class="menu-item-value">{{province || city || district ? (province + (city ? ' · ' + city : '') + (district ? ' · ' + district : '')) : '未设置'}}</text>
+      </view>
+      <text class="menu-item-arrow">›</text>
+    </view>
+
+    <view class="menu-item" bindtap="goToSettings">
+      <text class="menu-item-icon">⚙️</text>
+      <view class="menu-item-body">
+        <text class="menu-item-label">设置</text>
+        <text class="menu-item-value">权限、手机号管理</text>
+      </view>
+      <text class="menu-item-arrow">›</text>
+    </view>
+
+    <view class="menu-item" bindtap="goToAbout">
+      <text class="menu-item-icon">ℹ️</text>
+      <view class="menu-item-body">
+        <text class="menu-item-label">关于我们</text>
+        <text class="menu-item-value">版本、隐私政策</text>
+      </view>
+      <text class="menu-item-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- ==================== 退出登录 ==================== -->
+  <button wx:if="{{isLoggedIn}}" class="logout-btn" bindtap="logout">退出登录</button>
+
+  <!-- ==================== 注销账号 ==================== -->
+  <button wx:if="{{isLoggedIn}}" class="delete-account-btn" bindtap="showDeleteAccount">注销账号</button>
+
+  <!-- ==================== 注销确认弹窗 ==================== -->
+  <view wx:if="{{showDeleteAccount}}" class="modal-overlay" bindtap="cancelDeleteAccount">
+    <view class="modal-card" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">注销账号</text>
+      </view>
+      <view class="modal-body">
+        <text class="delete-warning">此操作不可恢复</text>
+        <text class="delete-desc">账号注销后，您的所有个人信息和数据将被永久删除，且无法找回。</text>
+      </view>
+      <view class="modal-actions">
+        <button class="modal-btn modal-btn-cancel" bindtap="cancelDeleteAccount">取消</button>
+        <button class="modal-btn modal-btn-danger" bindtap="confirmDeleteAccount">确认注销</button>
+      </view>
+    </view>
+  </view>
+
+</view>

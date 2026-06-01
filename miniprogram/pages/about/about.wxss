@@ -1,0 +1,175 @@
+/* =========================================================== */
+/* 系统信息 / 关于我们 页面样式                                */
+/* =========================================================== */
+
+.page {
+  padding: 40rpx 24rpx;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.app-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 0;
+  margin-bottom: 32rpx;
+}
+
+.app-logo-img {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 20rpx;
+  margin-bottom: 16rpx;
+  background: var(--gray-1);
+  padding: 6rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
+}
+
+.app-name {
+  font-size: var(--font-3xl);
+  font-weight: 700;
+  color: var(--gray-8);
+}
+
+.app-version {
+  font-size: var(--font-sm);
+  color: var(--gray-5);
+  margin-top: 8rpx;
+  background: var(--gray-2);
+  padding: 4rpx 20rpx;
+  border-radius: var(--radius-round);
+}
+
+/* ---- 分区 ---- */
+.section {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  margin-bottom: 24rpx;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.section-header {
+  padding: 28rpx 24rpx 8rpx;
+}
+
+.section-title {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--gray-8);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 24rpx;
+  border-bottom: 2rpx solid var(--gray-2);
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: var(--font-lg);
+  color: var(--gray-7);
+}
+
+.info-value {
+  font-size: var(--font-lg);
+  color: var(--gray-8);
+  font-weight: 500;
+}
+
+.about-content {
+  padding: 16rpx 24rpx 24rpx;
+}
+
+.about-text {
+  font-size: var(--font-md);
+  color: var(--gray-7);
+  line-height: 1.7;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 24rpx;
+  gap: 16rpx;
+}
+
+.contact-item:active {
+  background: var(--gray-1);
+}
+
+.contact-icon {
+  font-size: 40rpx;
+  flex-shrink: 0;
+}
+
+.contact-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.contact-label {
+  font-size: var(--font-lg);
+  font-weight: 500;
+  color: var(--gray-8);
+}
+
+.contact-desc {
+  font-size: 20rpx;
+  color: var(--gray-5);
+}
+
+.contact-arrow {
+  font-size: 36rpx;
+  color: var(--gray-5);
+}
+
+/* ---- 功能列表 ---- */
+.feature-list {
+  padding: 8rpx 0;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  gap: 16rpx;
+}
+
+.feature-icon {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  background: var(--gray-1);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.feature-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+}
+
+.feature-name {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--gray-8);
+}
+
+.feature-desc {
+  font-size: 20rpx;
+  color: var(--gray-5);
+}

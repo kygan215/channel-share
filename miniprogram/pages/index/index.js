@@ -1,559 +1,346 @@
 // ============================================================
-// 渠道列表首页
-// 功能：渠道列表展示、搜索、筛选、排序、点赞、评论、促销员
-// 数据存储依赖：wx.setStorageSync / getStorageSync
+// 首页 — 数据概览 + 隐私同意 + 权限验证
+// ============================================================
+// 这个页面是小程序的"大门口"，用户打开小程序首先看到它。
+// 它负责三件事：
+//   1. 如果用户没同意隐私协议 → 弹隐私弹窗
+//   2. 同意后验证用户有没有权限使用 → 没权限就显示"访问受限"
+//   3. 有权限 → 显示首页数据（促销员总数、在岗数等）
 // ============================================================
 
+// 从工具箱导入需要用到的函数
+const { getAllChannels, checkAuth } = require('../../utils/channel-service');
+
+// 权限缓存的有效期：1小时（1小时内不用重复验证）
+const AUTH_CACHE_TTL = 3600000;
+
+// Page 是微信小程序的页面构造函数
+// 里面定义了这个页面所有的数据、生命周期函数、事件处理函数
 Page({
   // ============================================================
-  // 页面数据
+  // data：页面数据（相当于页面的"状态"）
+  // 在 WXML 中用 {{变量名}} 访问
+  // 用 this.setData() 修改
   // ============================================================
   data: {
-    allData: [],          // 本地存储中全部渠道数据（原始数据）
-    groupedData: [],      // 经过过滤/排序/分组后用于渲染的数据
-    searchText: '',       // 搜索关键词
-    selectedProvince: '全部省份',
-    provinceIndex: 0,
-    provinces: ['全部省份'],
-    displayProvinces: ['全部省份'],
-    filterSearchText: '',
-    sortIndex: 0,
-    sortOptions: ['序号升序', '序号降序', '省份A-Z', '省份Z-A'],
-    loading: true,        // 加载状态
+    // 首页统计（显示在页面顶部的四个数字）
+    stats: { total: 0, hired: 0, quality: 0, provinces: 0 },
 
-    // ---- 快捷评论标签 ----
-    quickTags: [
-      '知识工作者，销售技巧熟练',
-      '主动叫卖',
-      '尚可胜任',
-      '态度好成长好',
-    ],
+    // 隐私协议相关
+    privacyAgreed: false,   // true=已同意隐私协议（控制弹窗显隐）
+    privacyChecked: false,  // true=复选框已勾选
 
-    // ---- 点赞/评论/促销员状态 ----
-    currentUserId: '',      // 当前用户唯一标识（本地生成）
-    expandedComments: {},   // 展开的评论区域 { [channelId]: true/false }
-    expandedPromoters: {},  // 展开的促销员区域 { [channelId]: true/false }
-    commentTexts: {},       // 评论输入框内容 { [channelId]: '文字' }
-    promoterNames: {},      // 促销员姓名输入 { [channelId]: '姓名' }
-    promoterPhones: {},     // 促销员电话输入 { [channelId]: '电话' }
+    // 权限验证相关
+    authChecked: false,     // true=已经验证过权限了
+    authorized: false,      // true=有权限使用系统
   },
 
   // ============================================================
-  // 生命周期：每次页面展示时自动刷新
+  // onLoad：页面加载时自动执行（只执行一次）
   // ============================================================
-  onShow() {
-    // 初始化当前用户标识（每次显示都要获取，确保已存在）
-    this.setData({ currentUserId: this.getUserId() });
-    // 从本地存储重新加载数据
-    this.fetchData();
-  },
-
-  // ============================================================
-  // 获取/创建当前用户标识
-  // 用时间戳生成唯一 ID，存入本地存储复用（模拟 openid）
-  // ============================================================
-  getUserId() {
-    // 尝试读取已有的用户 ID
-    let uid = wx.getStorageSync('_uid');
-    if (!uid) {
-      // 首次使用：生成新 ID（u + 时间戳）
-      uid = 'u' + Date.now();
-      wx.setStorageSync('_uid', uid);
-    }
-    return uid;
-  },
-
-  // ============================================================
-  // 从本地存储读取数据并刷新列表
-  // ============================================================
-  fetchData() {
-    // 显示加载状态
-    this.setData({ loading: true });
-
-    // 从本地存储读取全部渠道数据
-    const channels = wx.getStorageSync('channels') || [];
-
-    // 提取所有省份并去重排序，生成省份筛选列表
-    const provinceSet = new Set(
-      channels.map((item) => item.province).filter(Boolean)
-    );
-    const provinces = ['全部省份', ...Array.from(provinceSet).sort()];
-
-    // 更新数据
-    this.setData({
-      allData: channels,
-      provinces,
-      displayProvinces: provinces,
-      filterSearchText: '',
-      selectedProvince: '全部省份',
-      provinceIndex: 0,
-    });
-    // 执行过滤/排序/分组
-    this.processData();
-    // 关闭加载状态
-    this.setData({ loading: false });
-  },
-
-  // ============================================================
-  // 核心处理：过滤 → 排序 → 分组
-  // 按搜索关键词、省份筛选、排序模式处理后分组展示
-  // ============================================================
-  processData() {
-    // 解构当前数据和筛选状态
-    const { allData, searchText, selectedProvince, sortIndex, sortOptions, currentUserId } =
-      this.data;
-
-    // ---- 1. 搜索过滤 ----
-    // 匹配字段：省份、城市、电话（模糊搜索）
-    let filtered = allData.filter((item) => {
-      if (!searchText) return true;           // 无关键词则全部展示
-      const kw = searchText.toLowerCase();     // 转小写实现不区分大小写
-      return (
-        (item.province || '').toLowerCase().indexOf(kw) !== -1 ||
-        (item.city || '').toLowerCase().indexOf(kw) !== -1 ||
-        (item.phone || '').indexOf(kw) !== -1
-      );
-    });
-
-    // ---- 2. 省份筛选 ----
-    if (selectedProvince !== '全部省份') {
-      filtered = filtered.filter(
-        (item) => item.province === selectedProvince
-      );
+  onLoad() {
+    // 第一步：检查用户以前是否同意过隐私协议
+    // 如果本地存了 privacy_agreed=true → 跳过隐私弹窗
+    const agreed = wx.getStorageSync('privacy_agreed');
+    if (agreed) {
+      this.setData({ privacyAgreed: true });
     }
 
-    // ---- 3. 排序 ----
-    const sortMode = sortOptions[sortIndex];
-    if (sortMode === '序号降序') {
-      // 按序号从大到小（降序）
-      filtered.sort((a, b) => (b.sn || 0) - (a.sn || 0));
-    } else {
-      // 默认按序号从小到大（升序）
-      filtered.sort((a, b) => (a.sn || 0) - (b.sn || 0));
+    // 第二步：检查缓存的权限状态
+    // 如果1小时内验证过权限 → 直接用缓存结果，不用再请求服务器
+    const cachedAuth = wx.getStorageSync('auth_status');
+    if (cachedAuth && cachedAuth.checked && cachedAuth.timestamp) {
+      const age = Date.now() - cachedAuth.timestamp;
+      if (age < AUTH_CACHE_TTL) {
+        // 缓存还没有过期 → 直接使用
+        this.setData({
+          authChecked: true,
+          authorized: cachedAuth.authorized,
+        });
+      }
     }
 
-    // ---- 4. 补全字段 + 标记当前用户点赞状态 ----
-    // 兼容旧数据：旧记录可能没有 likes/comments/promoters 字段
-    filtered = filtered.map((item) => ({
-      ...item,
-      likes: item.likes || [],                            // 默认空数组
-      comments: item.comments || [],                      // 默认空数组
-      promoters: item.promoters || [],                    // 默认空数组
-      _liked: (item.likes || []).indexOf(currentUserId) !== -1, // 当前用户是否已点赞
-    }));
-
-    // ---- 5. 按省份分组 ----
-    const groupMap = new Map();
-    filtered.forEach((item) => {
-      const p = item.province || '未知';
-      if (!groupMap.has(p)) groupMap.set(p, []);
-      groupMap.get(p).push(item);
-    });
-
-    // 将 Map 转为数组便于渲染
-    let groups = [];
-    groupMap.forEach((items, province) => {
-      groups.push({ province, items });
-    });
-
-    // ---- 6. 组排序 ----
-    if (sortMode === '省份A-Z') {
-      // 按省份拼音正序
-      groups.sort((a, b) => a.province.localeCompare(b.province, 'zh'));
-    } else if (sortMode === '省份Z-A') {
-      // 按省份拼音倒序
-      groups.sort((a, b) => b.province.localeCompare(a.province, 'zh'));
-    } else if (sortMode === '序号升序') {
-      // 按每组最小序号升序
-      groups.sort((a, b) => (a.items[0].sn || 0) - (b.items[0].sn || 0));
-    } else if (sortMode === '序号降序') {
-      // 按每组最大序号降序
-      groups.sort((a, b) => (b.items[0].sn || 0) - (a.items[0].sn || 0));
-    }
-
-    // 更新渲染数据
-    this.setData({ groupedData: groups });
-  },
-
-  // ============================================================
-  // 搜索框输入事件
-  // ============================================================
-  onSearchInput(e) {
-    this.setData({ searchText: e.detail.value });
-    this.processData(); // 实时重新过滤
-  },
-
-  // ============================================================
-  // 省份搜索过滤
-  // ============================================================
-  onFilterSearch(e) {
-    const text = e.detail.value;
-    const filtered = this.data.provinces.filter(p => p.indexOf(text) !== -1);
-    this.setData({
-      filterSearchText: text,
-      displayProvinces: filtered,
-    });
-  },
-
-  // ============================================================
-  // 省份筛选 Tab 点击
-  // ============================================================
-  onProvinceTabTap(e) {
-    const value = e.currentTarget.dataset.value;
-    const idx = this.data.provinces.indexOf(value);
-    if (idx >= 0) this.onProvinceChange({ detail: { value: idx } });
-  },
-
-  // ============================================================
-  // 排序 Tab 点击
-  // ============================================================
-  onSortTabTap(e) {
-    this.onSortChange({ detail: { value: parseInt(e.currentTarget.dataset.index, 10) } });
-  },
-
-  // ============================================================
-  // 省份筛选切换
-  // ============================================================
-  onProvinceChange(e) {
-    const index = parseInt(e.detail.value, 10);
-    this.setData({
-      provinceIndex: index,
-      selectedProvince: this.data.provinces[index],
-    });
-    this.processData();
-  },
-
-  // ============================================================
-  // 排序方式切换
-  // ============================================================
-  onSortChange(e) {
-    this.setData({ sortIndex: parseInt(e.detail.value, 10) });
-    this.processData();
-  },
-
-  // ============================================================
-  // 复制电话到剪贴板
-  // ============================================================
-  copyPhone(e) {
-    const { phone } = e.currentTarget.dataset;
-    wx.setClipboardData({
-      data: String(phone),
-      success: () => wx.showToast({ title: '电话已复制' }),
-    });
-  },
-
-  // ============================================================
-  // 复制微信号到剪贴板
-  // ============================================================
-  copyWechat(e) {
-    const { wechat } = e.currentTarget.dataset;
-    wx.setClipboardData({
-      data: String(wechat),
-      success: () => wx.showToast({ title: '微信号已复制' }),
-    });
-  },
-
-  // ============================================================
-  // 删除渠道记录
-  // 先弹确认框，确认后从本地存储移除
-  // ============================================================
-  deleteItem(e) {
-    // 获取渠道 ID（从自定义属性 data-id）
-    const id = Number(e.currentTarget.dataset.id);
-    wx.showModal({
-      title: '确认删除',
-      content: '确定要删除这条记录吗？',
-      success: (res) => {
-        if (res.confirm) {
-          // 从本地存储读取全部数据
-          let channels = wx.getStorageSync('channels') || [];
-          // 过滤掉要删除的记录
-          channels = channels.filter((item) => item.id !== id);
-          // 保存回本地存储
-          wx.setStorageSync('channels', channels);
-          wx.showToast({ title: '删除成功' });
-          // 刷新列表
-          this.fetchData();
+    // 第三步：监听微信隐私授权事件
+    // 如果用户使用了需要隐私权限的 API（比如定位），微信会自动触发
+    if (wx.onNeedPrivacyAuthorization) {
+      wx.onNeedPrivacyAuthorization((resolve) => {
+        // 如果已经同意过 → 直接放行
+        if (wx.getStorageSync('privacy_agreed')) {
+          resolve({ event: 'agree', buttonId: 'agree-btn' });
+        } else {
+          // 还没同意 → 保存 resolve 回调
+          // 如果之前已经有一个 resolve 还没处理，先取消它
+          if (this._privacyResolve) {
+            this._privacyResolve({ event: 'cancel' });
+          }
+          this._privacyResolve = resolve;
+          // 同时显示隐私弹窗
+          this.setData({ privacyAgreed: false });
         }
+      });
+    }
+  },
+
+  // ============================================================
+  // onShow：页面每次显示时执行（切换 Tab 也会触发）
+  // ============================================================
+  async onShow() {
+    // 只有用户同意了隐私协议，才继续加载数据
+    if (this.data.privacyAgreed) {
+      // 如果还没验证过权限 → 发起验证
+      if (!this.data.authChecked) {
+        await this._checkAccess();
+      }
+      // 有权限才加载首页数据
+      if (this.data.authorized) {
+        this.loadStats();
+      }
+    }
+  },
+
+  // ============================================================
+  // _checkAccess：验证当前用户是否有权限使用系统
+  // 这是内部方法（以 _ 开头），不直接在 WXML 中调用
+  // ============================================================
+  async _checkAccess() {
+    try {
+      // 调用云函数查当前用户的身份
+      const result = await checkAuth();
+      // 如果返回了 isAdmin 或 isViewer 或 role 是 admin/viewer → 有权限
+      const authorized = result && (result.isAdmin || result.isViewer || result.role === 'admin' || result.role === 'viewer');
+      // 更新页面状态
+      this.setData({
+        authChecked: true,     // 已经验证过了
+        authorized: !!authorized, // 是否有权限
+      });
+      // 写入缓存（1小时内不用再验证）
+      wx.setStorageSync('auth_status', {
+        checked: true,
+        authorized: !!authorized,
+        timestamp: Date.now(),
+      });
+    } catch (err) {
+      // 网络异常时 → 保守处理：显示"无权限"
+      console.error('权限验证失败:', err);
+      this.setData({
+        authChecked: true,
+        authorized: false,
+      });
+      wx.setStorageSync('auth_status', {
+        checked: true,
+        authorized: false,
+        timestamp: Date.now(),
+      });
+    }
+  },
+
+  // ============================================================
+  // loadStats：加载首页统计数据（促销员总数、在岗数、优质数、覆盖省份）
+  // ============================================================
+  async loadStats() {
+    // 获取所有数据
+    const channels = await getAllChannels();
+    // 如果数据为空 → 全部显示0
+    if (channels.length === 0) {
+      this.setData({ stats: { total: 0, hired: 0, quality: 0, provinces: 0 } });
+      return;
+    }
+
+    // 统计
+    const provinceSet = new Set(); // 用 Set 去重省份
+    let hired = 0, quality = 0;
+    channels.forEach((item) => {
+      if (item.province) provinceSet.add(item.province); // 收集省份
+      if (item.hired) hired++;            // 统计在岗人数
+      if (item.quality) quality++;        // 统计优质人数
+    });
+
+    // 更新页面显示
+    this.setData({
+      stats: {
+        total: channels.length,             // 总促销员数
+        hired,                              // 在岗数
+        quality,                            // 优质数
+        provinces: provinceSet.size,         // 覆盖省份数
       },
     });
   },
 
   // ============================================================
-  // 跳转到新增渠道页面
+  // 以下是隐私协议相关的事件处理
   // ============================================================
-  goToAdd() {
-    wx.navigateTo({ url: '/pages/add/add' });
+
+  // goToPrivacy：跳转到完整的隐私政策页面
+  goToPrivacy() {
+    wx.navigateTo({ url: '/pages/privacy/privacy' });
+  },
+
+  // toggleAgree：切换复选框的勾选状态
+  toggleAgree() {
+    this.setData({ privacyChecked: !this.data.privacyChecked });
+  },
+
+  // confirmPrivacy：用户点击"同意并继续"按钮
+  // 1. 把同意状态存到本地
+  // 2. 如果有微信隐私授权的 resolve 回调 → 放行
+  // 3. 验证权限
+  // 4. 有权限 → 加载首页数据
+  async confirmPrivacy() {
+    // 如果没勾选复选框，什么也不做
+    if (!this.data.privacyChecked) return;
+
+    // 持久化存储：同意过隐私协议，下次不用再弹
+    wx.setStorageSync('privacy_agreed', true);
+
+    // 如果有微信的隐私授权请求的回调，通知它"用户已同意"
+    if (this._privacyResolve) {
+      this._privacyResolve({ event: 'agree', buttonId: 'agree-btn' });
+      this._privacyResolve = null;
+    }
+
+    // 显示加载提示（防止隐私弹窗消失后页面闪白）
+    wx.showLoading({ title: '验证身份中...', mask: true });
+
+    // 验证用户权限
+    await this._checkAccess();
+    wx.hideLoading();
+
+    // 隐私弹窗消失，显示首页或权限门
+    this.setData({ privacyAgreed: true });
+
+    // 有权限 → 加载首页数据
+    if (this.data.authorized) {
+      this.loadStats();
+    }
   },
 
   // ============================================================
-  // 导出 Excel
-  // 从当前筛选后的数据取记录，传给云函数生成 xlsx
+  // 功能菜单导航（页面跳转）
   // ============================================================
-  exportData() {
-    const { groupedData } = this.data;
-    // 将分组数据展平为记录数组
-    const records = [];
-    groupedData.forEach((group) => {
-      group.items.forEach((item) => {
-        records.push(item);
-      });
-    });
+  goToQuery() {
+    wx.navigateTo({ url: '/pages/query/query' });
+  },
+  goToAdd() {
+    wx.navigateTo({ url: '/pages/add/add' });
+  },
+  goToImport() {
+    wx.navigateTo({ url: '/pages/import/import' });
+  },
+  goToManage() {
+    wx.navigateTo({ url: '/pages/manage/manage' });
+  },
 
-    // 无数据时提示
-    if (records.length === 0) {
+  // ============================================================
+  // exportData：导出为 CSV 文件
+  // ============================================================
+  async exportData() {
+    let channels = await getAllChannels();
+
+    // 如果云函数没返回数据，试试从本地缓存取
+    if (channels.length === 0) {
+      channels = wx.getStorageSync('channels') || [];
+    }
+
+    if (channels.length === 0) {
       wx.showToast({ title: '暂无数据可导出', icon: 'none' });
       return;
     }
 
     wx.showLoading({ title: '导出中...' });
 
-    // 调用云函数 exportExcel，传入记录数据
-    wx.cloud
-      .callFunction({
-        name: 'exportExcel',
-        data: { records },
-      })
-      .then((res) => {
-        wx.hideLoading();
-        if (!res.result || !res.result.success) {
-          wx.showToast({
-            title: res.result?.message || '导出失败',
-            icon: 'none',
-          });
-          return;
-        }
-        const { downloadUrl } = res.result;
-        // 下载文件并打开
-        wx.downloadFile({
-          url: downloadUrl,
-          success: (downloadRes) => {
-            wx.openDocument({
-              filePath: downloadRes.tempFilePath,
-              fileType: 'xlsx',
-              success: () => wx.showToast({ title: '导出成功' }),
-              fail: () => {
-                // 无法打开时复制下载链接到剪贴板
-                wx.setClipboardData({
-                  data: downloadUrl,
-                  success: () =>
-                    wx.showToast({ title: '下载链接已复制到剪贴板' }),
-                });
-              },
-            });
-          },
-          fail: () => wx.showToast({ title: '文件下载失败', icon: 'none' }),
+    // 组装 CSV 表头和数据行
+    const headers = ['序号', '姓名', '省份', '城市', '区/镇', '地址', '电话', '微信号', '备注', '卖场经验', '底薪', '内部标注', '点赞数', '评论数', '状态'];
+    const rows = channels.map((r) => [
+      r.sn || '',
+      r.name || '',
+      r.province || '',
+      r.city || '',
+      r.district || '',
+      r.street || '',
+      r.phone || '',
+      r.wechat || '',
+      r.remark || '',
+      (r.kaTags || []).join('、'),
+      r.baseSalary || '',
+      r.blacklisted ? '⚫黑名单' : (r.quality ? '⭐优质' : ''),
+      (r.likes || []).length,
+      (r.comments || []).length,
+      (r.hireHistory && r.hireHistory.length > 0) || r.hired || (r.comments && r.comments.length > 0) ? '已聘用过' : '',
+    ]);
+
+    // 生成 CSV 文本（处理逗号和引号转义）
+    const csvContent = [headers, ...rows]
+      .map((row) =>
+        row.map((cell) => {
+          const str = String(cell);
+          return str.indexOf(',') !== -1 || str.indexOf('"') !== -1
+            ? '"' + str.replace(/"/g, '""') + '"'
+            : str;
+        }).join(',')
+      )
+      .join('\n');
+
+    // 写入临时文件
+    const fs = wx.getFileSystemManager();
+    const fileName = `促销员数据_${new Date().toLocaleDateString('zh-CN').replace(/\//g, '-')}.csv`;
+    const filePath = wx.env.USER_DATA_PATH + '/' + fileName;
+
+    try {
+      // 写入文件（BOM + 内容，防止 Excel 打开乱码）
+      fs.writeFileSync(filePath, '﻿' + csvContent, 'utf8');
+      wx.hideLoading();
+
+      // 尝试保存到用户设备
+      if (wx.saveFileToDisk) {
+        wx.saveFileToDisk({
+          filePath,
+          success: () => wx.showToast({ title: '导出成功' }),
+          fail: () => this.shareOrCopy(filePath, csvContent),
         });
-      })
-      .catch((err) => {
-        wx.hideLoading();
-        console.error('导出失败', err);
-        wx.showToast({ title: '导出失败，请检查云开发状态', icon: 'none' });
-      });
-  },
-
-  // ============================================================
-  // 点赞 / 取消点赞
-  // 检查当前用户是否已在 likes 数组中，切换状态
-  // ============================================================
-  toggleLike(e) {
-    // 渠道 ID
-    const id = Number(e.currentTarget.dataset.id);
-    // 当前用户标识
-    const userId = this.data.currentUserId;
-    // 读取本地存储的全部数据
-    let channels = wx.getStorageSync('channels') || [];
-    // 查找要操作的记录
-    const index = channels.findIndex((item) => item.id === id);
-    if (index === -1) return; // 未找到则退出
-
-    // 确保 likes 数组存在
-    if (!channels[index].likes) channels[index].likes = [];
-
-    // 如果已点赞则取消，否则添加
-    if (channels[index].likes.indexOf(userId) !== -1) {
-      // 从数组中移除当前用户 ID
-      channels[index].likes = channels[index].likes.filter((u) => u !== userId);
-    } else {
-      // 添当前用户 ID
-      channels[index].likes.push(userId);
+      } else {
+        this.shareOrCopy(filePath, csvContent);
+      }
+    } catch (err) {
+      wx.hideLoading();
+      console.error('导出失败', err);
+      wx.showToast({ title: '导出失败', icon: 'none' });
     }
-
-    // 保存更新后的数据
-    wx.setStorageSync('channels', channels);
-    // 刷新列表以更新显示
-    this.fetchData();
   },
 
-  // ============================================================
-  // 展开/收起评论区域
-  // ============================================================
-  toggleComments(e) {
-    // 渠道 ID 转为字符串（用作对象键）
-    const id = String(e.currentTarget.dataset.id);
-    // 动态更新 expandedComments 中该渠道的展开状态
-    const key = `expandedComments.${id}`;
-    this.setData({ [key]: !this.data.expandedComments[id] });
-  },
-
-  // ============================================================
-  // 评论输入框输入事件
-  // 按渠道 ID 分别存储每条的输入内容
-  // ============================================================
-  onCommentInput(e) {
-    // 渠道 ID 转为字符串
-    const channelId = String(e.currentTarget.dataset.channelId);
-    // 更新对应渠道的评论输入内容
-    this.setData({ [`commentTexts.${channelId}`]: e.detail.value });
-  },
-
-  // ============================================================
-  // 快捷评论标签点击：将标签内容填入评论输入框
-  // ============================================================
-  onQuickTagTap(e) {
-    const channelId = String(e.currentTarget.dataset.channelId);
-    const tag = e.currentTarget.dataset.tag;
-    this.setData({ [`commentTexts.${channelId}`]: tag });
-  },
-
-  // ============================================================
-  // 添加评论
-  // ============================================================
-  addComment(e) {
-    // 获取渠道 ID
-    const channelId = Number(e.currentTarget.dataset.channelId);
-    // 读取该渠道对应的输入内容并去除首尾空格
-    const content = (this.data.commentTexts[String(channelId)] || '').trim();
-    if (!content) return; // 空内容不提交
-
-    // 读取本地存储的全部数据
-    let channels = wx.getStorageSync('channels') || [];
-    const index = channels.findIndex((item) => item.id === channelId);
-    if (index === -1) return;
-
-    // 确保 comments 数组存在
-    if (!channels[index].comments) channels[index].comments = [];
-
-    // 组装评论对象并添加到数组
-    channels[index].comments.push({
-      id: Date.now(),                              // 唯一 ID
-      userId: this.data.currentUserId,             // 评论者身份标识
-      nickname: '当前用户',                         // 评论者昵称（暂固定）
-      content: content,                             // 评论内容
-      time: new Date().toLocaleString('zh-CN'),     // 评论时间
+  // shareOrCopy：导出失败后的备选方案（分享或复制到剪贴板）
+  shareOrCopy(filePath, csvContent) {
+    wx.showActionSheet({
+      itemList: ['分享到微信', '复制数据到剪贴板'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          wx.shareFileMessage({
+            filePath,
+            fileName: '促销员数据.csv',
+            success: () => wx.showToast({ title: '分享成功' }),
+            fail: () => this.copyToClipboard(csvContent),
+          });
+        } else {
+          this.copyToClipboard(csvContent);
+        }
+      },
+      fail: () => {
+        wx.showModal({
+          title: '导出提示',
+          content: '可将 CSV 数据复制到剪贴板，粘贴到文本文件保存为 .csv',
+          confirmText: '复制数据',
+          success: (r) => {
+            if (r.confirm) this.copyToClipboard(csvContent);
+          },
+        });
+      },
     });
-
-    // 保存到本地存储
-    wx.setStorageSync('channels', channels);
-    // 清空该渠道的评论输入框
-    this.setData({ [`commentTexts.${channelId}`]: '' });
-    // 刷新列表
-    this.fetchData();
   },
 
-  // ============================================================
-  // 删除评论（只能删除自己的）
-  // ============================================================
-  deleteComment(e) {
-    // 渠道 ID 和 评论 ID
-    const channelId = Number(e.currentTarget.dataset.channelId);
-    const commentId = Number(e.currentTarget.dataset.commentId);
-    // 读取本地存储
-    let channels = wx.getStorageSync('channels') || [];
-    const index = channels.findIndex((item) => item.id === channelId);
-    if (index === -1) return;
-
-    // 按评论 ID 过滤掉要删除的评论
-    channels[index].comments = (channels[index].comments || []).filter(
-      (c) => c.id !== commentId
-    );
-    // 保存并刷新
-    wx.setStorageSync('channels', channels);
-    this.fetchData();
-  },
-
-  // ============================================================
-  // 展开/收起促销员区域
-  // ============================================================
-  togglePromoters(e) {
-    const id = String(e.currentTarget.dataset.id);
-    const key = `expandedPromoters.${id}`;
-    this.setData({ [key]: !this.data.expandedPromoters[id] });
-  },
-
-  // ============================================================
-  // 促销员姓名输入
-  // ============================================================
-  onPromoterNameInput(e) {
-    const channelId = String(e.currentTarget.dataset.channelId);
-    this.setData({ [`promoterNames.${channelId}`]: e.detail.value });
-  },
-
-  // ============================================================
-  // 促销员电话输入
-  // ============================================================
-  onPromoterPhoneInput(e) {
-    const channelId = String(e.currentTarget.dataset.channelId);
-    this.setData({ [`promoterPhones.${channelId}`]: e.detail.value });
-  },
-
-  // ============================================================
-  // 添加促销员
-  // ============================================================
-  addPromoter(e) {
-    // 获取渠道 ID
-    const channelId = Number(e.currentTarget.dataset.channelId);
-    // 读取输入的姓名（必填）
-    const name = (this.data.promoterNames[String(channelId)] || '').trim();
-    if (!name) {
-      wx.showToast({ title: '请填写姓名', icon: 'none' });
-      return;
-    }
-
-    // 读取本地存储
-    let channels = wx.getStorageSync('channels') || [];
-    const index = channels.findIndex((item) => item.id === channelId);
-    if (index === -1) return;
-
-    // 确保 promoters 数组存在
-    if (!channels[index].promoters) channels[index].promoters = [];
-
-    // 添加促销员对象
-    channels[index].promoters.push({
-      id: Date.now(),                                           // 唯一 ID
-      name: name,                                               // 姓名
-      phone: (this.data.promoterPhones[String(channelId)] || '').trim(), // 电话（选填）
+  // copyToClipboard：将数据复制到系统剪贴板
+  copyToClipboard(csvContent) {
+    wx.setClipboardData({
+      data: csvContent,
+      success: () => wx.showToast({ title: 'CSV 数据已复制，请粘贴到文本文件保存为 .csv' }),
     });
-
-    // 保存到本地存储
-    wx.setStorageSync('channels', channels);
-    // 清空表单输入
-    this.setData({
-      [`promoterNames.${channelId}`]: '',
-      [`promoterPhones.${channelId}`]: '',
-    });
-    // 刷新列表
-    this.fetchData();
-  },
-
-  // ============================================================
-  // 删除促销员
-  // ============================================================
-  deletePromoter(e) {
-    // 渠道 ID 和 促销员 ID
-    const channelId = Number(e.currentTarget.dataset.channelId);
-    const promoterId = Number(e.currentTarget.dataset.promoterId);
-    // 读取本地存储
-    let channels = wx.getStorageSync('channels') || [];
-    const index = channels.findIndex((item) => item.id === channelId);
-    if (index === -1) return;
-
-    // 按促销员 ID 过滤移除
-    channels[index].promoters = (channels[index].promoters || []).filter(
-      (p) => p.id !== promoterId
-    );
-    // 保存并刷新
-    wx.setStorageSync('channels', channels);
-    this.fetchData();
   },
 });
