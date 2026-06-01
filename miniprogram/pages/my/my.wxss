@@ -1,15 +1,16 @@
 /* =========================================================== */
-/* "我的" 页面 — 品牌化设计                                    */
+/* "我的" 页面 — 品牌化设计（v2）                               */
 /* =========================================================== */
 
 .page {
   padding: 0 0 40rpx;
   min-height: 100vh;
   box-sizing: border-box;
+  background: var(--gray-1);
 }
 
 /* =========================================================== */
-/* 1. 品牌头                                                   */
+/* 1. 品牌头（更高、更有气势）                                  */
 /* =========================================================== */
 
 .brand-header {
@@ -17,78 +18,74 @@
   align-items: center;
   justify-content: center;
   gap: 16rpx;
-  padding: 32rpx 32rpx 24rpx;
-  background: linear-gradient(135deg, #07c160, #06ad56);
+  padding: 48rpx 32rpx 56rpx;
+  background: linear-gradient(135deg, #07c160 0%, #06ad56 40%, #059e4e 100%);
   position: relative;
   overflow: hidden;
 }
 
-.brand-header-bg {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  pointer-events: none;
-}
-.brand-header-bg::before {
+.brand-header::before {
   content: '';
   position: absolute;
-  top: -100rpx;
-  right: -80rpx;
-  width: 360rpx;
-  height: 360rpx;
+  top: -120rpx;
+  right: -60rpx;
+  width: 400rpx;
+  height: 400rpx;
   border-radius: 50%;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
-.brand-header-bg::after {
+
+.brand-header::after {
   content: '';
   position: absolute;
-  bottom: -120rpx;
-  left: -60rpx;
-  width: 300rpx;
-  height: 300rpx;
+  bottom: -160rpx;
+  left: -80rpx;
+  width: 500rpx;
+  height: 500rpx;
   border-radius: 50%;
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .brand-header-logo {
-  width: 52rpx;
-  height: 52rpx;
-  border-radius: 12rpx;
-  background: rgba(255,255,255,0.95);
-  padding: 4rpx;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 14rpx;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6rpx;
   position: relative;
   z-index: 1;
 }
 
 .brand-header-name {
-  font-size: 30rpx;
+  font-size: 32rpx;
   font-weight: 700;
   color: #fff;
   position: relative;
   z-index: 1;
-  letter-spacing: 1rpx;
+  letter-spacing: 2rpx;
 }
 
-
 /* =========================================================== */
-/* 2. 用户资料卡                                               */
+/* 2. 用户资料卡（居中布局，更精致）                            */
 /* =========================================================== */
 
 .profile-card {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 32rpx 32rpx 36rpx;
+  padding: 0 32rpx 32rpx;
   background: #fff;
-  margin: -16rpx 24rpx 0;
+  margin: -32rpx 24rpx 0;
   border-radius: 24rpx;
-  gap: 24rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.06);
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.06);
   position: relative;
   z-index: 2;
 }
 
 .profile-avatar-wrap {
   position: relative;
-  flex-shrink: 0;
+  margin-top: -50rpx;
+  margin-bottom: 16rpx;
 }
 
 .profile-avatar {
@@ -102,13 +99,12 @@
   color: #fff;
   font-weight: 700;
   overflow: hidden;
-  border: 4rpx solid #fff;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.08);
+  border: 6rpx solid #fff;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.12);
 }
 
 .profile-avatar-placeholder {
   background: linear-gradient(135deg, #07c160, #059e4e);
-  border: 4rpx solid rgba(255,255,255,0.8);
 }
 
 .profile-avatar-badge {
@@ -116,28 +112,30 @@
   bottom: 0;
   right: -4rpx;
   font-size: 18rpx;
-  color: var(--primary);
-  background: #fff;
-  padding: 2rpx 14rpx;
+  color: #fff;
+  background: var(--primary);
+  padding: 2rpx 16rpx;
   border-radius: var(--radius-round);
-  font-weight: 600;
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.08);
-  border: 2rpx solid var(--primary-light);
+  font-weight: 500;
+  border: 3rpx solid #fff;
 }
 
 .profile-avatar-edit {
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   right: 0;
-  text-align: center;
-  background: rgba(0,0,0,0.45);
+  bottom: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
   color: #fff;
-  font-size: 18rpx;
-  padding: 4rpx 0;
-  border-radius: 0 0 64rpx 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
   opacity: 0;
   transition: opacity 0.2s;
+  border: 6rpx solid #fff;
 }
 
 .profile-avatar-wrap:active .profile-avatar-edit {
@@ -145,21 +143,25 @@
 }
 
 .profile-body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6rpx;
+  text-align: center;
+  width: 100%;
 }
 
 .profile-name-row {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 10rpx;
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-round);
+  transition: background 0.2s;
+}
+
+.profile-name-row:active {
+  background: var(--gray-2);
 }
 
 .profile-name {
-  font-size: 34rpx;
+  font-size: 36rpx;
   font-weight: 700;
   color: var(--gray-8);
 }
@@ -174,46 +176,113 @@
 }
 
 .profile-subtitle {
+  display: block;
   font-size: 22rpx;
   color: var(--gray-5);
+  margin-top: 6rpx;
 }
 
 .profile-tags {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  margin-top: 12rpx;
   flex-wrap: wrap;
-  gap: 8rpx;
-  margin-top: 2rpx;
 }
 
 .profile-tag {
-  font-size: 20rpx;
-  color: var(--gray-7);
+  font-size: 22rpx;
+  color: var(--gray-6);
   background: var(--gray-1);
-  padding: 4rpx 16rpx;
+  padding: 6rpx 20rpx;
   border-radius: var(--radius-round);
   font-weight: 500;
 }
 
 .profile-login-btn {
-  flex-shrink: 0;
-  height: 64rpx;
-  line-height: 64rpx;
-  padding: 0 32rpx;
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
   background: var(--primary-gradient);
   color: #fff;
   border-radius: var(--radius-round);
-  font-size: var(--font-md);
+  font-size: var(--font-xl);
   font-weight: 600;
-  box-shadow: 0 4rpx 12rpx rgba(7, 193, 96, 0.25);
+  margin-top: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(7, 193, 96, 0.25);
+  letter-spacing: 2rpx;
 }
 
 .profile-login-btn:active {
   opacity: 0.85;
+  transform: scale(0.97);
 }
 
+/* =========================================================== */
+/* 3. 功能菜单                                                  */
+/* =========================================================== */
+
+.menu-group {
+  background: #fff;
+  margin: 20rpx 24rpx 0;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 28rpx;
+  border-bottom: 2rpx solid var(--gray-2);
+  gap: 16rpx;
+  transition: background 0.15s;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:active {
+  background: var(--gray-1);
+}
+
+.menu-item-icon {
+  font-size: 36rpx;
+  flex-shrink: 0;
+}
+
+.menu-item-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+  min-width: 0;
+}
+
+.menu-item-label {
+  font-size: var(--font-lg);
+  color: var(--gray-8);
+  font-weight: 600;
+}
+
+.menu-item-value {
+  font-size: 20rpx;
+  color: var(--gray-5);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-item-arrow {
+  font-size: 36rpx;
+  color: var(--gray-4);
+  flex-shrink: 0;
+}
 
 /* =========================================================== */
-/* 3. 创建账号表单                                               */
+/* 4. 创建账号表单                                              */
 /* =========================================================== */
 
 .setup-card {
@@ -221,7 +290,7 @@
   background: #fff;
   border-radius: 24rpx;
   padding: 40rpx 32rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.05);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
 }
 
 .setup-header {
@@ -271,9 +340,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s;
 }
 
-.setup-avatar-btn:active { opacity: 0.8; }
+.setup-avatar-btn:active {
+  opacity: 0.8;
+  border-color: var(--primary);
+}
 
 .setup-avatar {
   width: 100%;
@@ -346,58 +419,81 @@
   font-size: var(--font-lg);
   font-weight: 600;
   text-align: center;
+  transition: all 0.2s;
+}
+
+.setup-btn:active {
+  opacity: 0.85;
+  transform: scale(0.96);
 }
 
 .setup-btn-cancel {
   background: var(--gray-1);
   color: var(--gray-7);
 }
-.setup-btn-cancel:active { opacity: 0.7; }
 
 .setup-btn-confirm {
   background: var(--primary-gradient);
   color: #fff;
   box-shadow: 0 4rpx 16rpx rgba(7, 193, 96, 0.3);
 }
-.setup-btn-confirm:active { opacity: 0.85; }
 
 .picker-ph {
   color: var(--gray-5);
   font-size: var(--font-lg);
 }
 
-
 /* =========================================================== */
-/* 4. 区域编辑弹窗                                             */
+/* 5. 弹窗                                                      */
 /* =========================================================== */
 
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.4);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: maskIn 0.25s ease-out;
+}
+
+@keyframes maskIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal-card {
   width: 600rpx;
   background: #fff;
   border-radius: 24rpx;
-  padding: 40rpx;
-  box-shadow: 0 16rpx 60rpx rgba(0,0,0,0.15);
+  overflow: hidden;
+  box-shadow: 0 16rpx 60rpx rgba(0, 0, 0, 0.15);
+  animation: modalSlide 0.3s ease-out;
+}
+
+@keyframes modalSlide {
+  from { opacity: 0; transform: translateY(40rpx) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .modal-header {
   text-align: center;
-  margin-bottom: 36rpx;
+  padding: 32rpx 32rpx 16rpx;
 }
 
 .modal-title {
   font-size: var(--font-2xl);
   font-weight: 700;
   color: var(--gray-8);
+}
+
+.modal-body {
+  padding: 0 32rpx 24rpx;
+  text-align: center;
 }
 
 .modal-field {
@@ -411,157 +507,61 @@
   display: flex;
   align-items: center;
   box-sizing: border-box;
-  margin-bottom: 28rpx;
+  margin-bottom: 20rpx;
+  transition: all 0.2s;
+  border: 2rpx solid transparent;
+}
+
+.modal-field:focus {
+  border-color: var(--primary);
+  background: #fff;
 }
 
 .modal-actions {
   display: flex;
-  gap: 16rpx;
-  margin-top: 8rpx;
+  border-top: 2rpx solid var(--gray-2);
 }
 
 .modal-btn {
   flex: 1;
-  height: 84rpx;
-  line-height: 84rpx;
-  border-radius: 16rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
   font-size: var(--font-lg);
   font-weight: 600;
-  text-align: center;
+  border-radius: 0;
+  transition: background 0.15s;
+}
+
+.modal-btn:active {
+  background: var(--gray-2);
 }
 
 .modal-btn-cancel {
-  background: var(--gray-1);
-  color: var(--gray-7);
+  color: var(--gray-6);
+  border-right: 2rpx solid var(--gray-2);
 }
-.modal-btn-cancel:active { opacity: 0.7; }
 
 .modal-btn-confirm {
-  background: var(--primary-gradient);
-  color: #fff;
-  box-shadow: 0 4rpx 16rpx rgba(7, 193, 96, 0.3);
-}
-.modal-btn-confirm:active { opacity: 0.85; }
-
-
-/* =========================================================== */
-/* 5. 功能菜单                                                 */
-/* =========================================================== */
-
-.menu-group {
-  background: #fff;
-  margin: 28rpx 24rpx 0;
-  border-radius: 24rpx;
-  overflow: hidden;
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.04);
+  color: var(--primary);
+  font-weight: 700;
 }
 
-.menu-item {
-  display: flex;
-  align-items: center;
-  padding: 28rpx 28rpx;
-  border-bottom: 2rpx solid var(--gray-2);
-  gap: 16rpx;
-}
-
-.menu-item:last-child { border-bottom: none; }
-.menu-item:active { background: var(--gray-1); }
-
-.menu-item-icon {
-  font-size: 36rpx;
-  flex-shrink: 0;
-}
-
-.menu-item-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2rpx;
-  min-width: 0;
-}
-
-.menu-item-label {
-  font-size: var(--font-lg);
-  color: var(--gray-8);
-  font-weight: 600;
-}
-
-.menu-item-value {
-  font-size: 20rpx;
-  color: var(--gray-5);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.menu-item-arrow {
-  font-size: 36rpx;
-  color: var(--gray-4);
-  flex-shrink: 0;
-}
-
-
-/* =========================================================== */
-/* 6. 退出登录                                                 */
-/* =========================================================== */
-
-.logout-btn {
-  width: calc(100% - 48rpx);
-  height: 84rpx;
-  line-height: 84rpx;
-  margin: 40rpx 24rpx 0;
-  background: #fff;
+.modal-btn-danger {
   color: var(--danger);
-  border-radius: 24rpx;
-  font-size: var(--font-lg);
-  font-weight: 600;
-  text-align: center;
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.04);
-  border: 2rpx solid var(--gray-2);
+  font-weight: 700;
 }
-
-.logout-btn:active {
-  background: var(--danger-light);
-  border-color: var(--danger);
-}
-
 
 /* =========================================================== */
-/* 7. 注销账号                                                 */
+/* 6. 注销警告                                                  */
 /* =========================================================== */
-
-.delete-account-btn {
-  width: calc(100% - 48rpx);
-  height: 84rpx;
-  line-height: 84rpx;
-  margin: 24rpx 24rpx 0;
-  background: #fff;
-  color: #999;
-  border-radius: 24rpx;
-  font-size: var(--font-sm);
-  font-weight: 400;
-  text-align: center;
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.04);
-  border: 2rpx solid var(--gray-2);
-}
-
-.delete-account-btn:active {
-  background: #f5f5f5;
-  color: #e64340;
-  border-color: #e64340;
-}
-
-.modal-body {
-  margin-bottom: 36rpx;
-  text-align: center;
-}
 
 .delete-warning {
   display: block;
   font-size: var(--font-lg);
   font-weight: 700;
-  color: #e64340;
-  margin-bottom: 16rpx;
+  color: var(--danger);
+  margin-bottom: 8rpx;
 }
 
 .delete-desc {
@@ -571,15 +571,58 @@
   line-height: 1.6;
 }
 
-.modal-btn-danger {
-  flex: 1;
+/* =========================================================== */
+/* 7. 退出登录 & 注销按钮                                       */
+/* =========================================================== */
+
+.logout-btn,
+.delete-account-btn {
+  width: calc(100% - 48rpx);
   height: 84rpx;
   line-height: 84rpx;
-  border-radius: 16rpx;
+  border-radius: 24rpx;
   font-size: var(--font-lg);
   font-weight: 600;
   text-align: center;
-  background: #e64340;
-  color: #fff;
+  margin: 0 24rpx;
 }
-.modal-btn-danger:active { opacity: 0.85; }
+
+.logout-btn {
+  margin-top: 40rpx;
+  background: #fff;
+  color: var(--gray-7);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  border: 2rpx solid var(--gray-3);
+}
+
+.logout-btn:active {
+  background: var(--danger-light);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.delete-account-btn {
+  margin-top: 20rpx;
+  margin-bottom: 48rpx;
+  background: transparent;
+  color: var(--gray-5);
+  font-size: 22rpx;
+  font-weight: 400;
+}
+
+.delete-account-btn:active {
+  color: var(--danger);
+}
+
+/* =========================================================== */
+/* 动画                                                        */
+/* =========================================================== */
+
+.slide-up {
+  animation: slideUp 0.35s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}

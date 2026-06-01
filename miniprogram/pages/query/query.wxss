@@ -1,5 +1,5 @@
 /* =========================================================== */
-/* 查询页样式 — 搜索条件表单                                   */
+/* 查询页 — 搜索条件表单（全新卡片式设计）                      */
 /* =========================================================== */
 
 .page {
@@ -7,19 +7,84 @@
   flex-direction: column;
   height: 100vh;
   box-sizing: border-box;
+  background: var(--gray-1);
 }
 
 /* =========================================================== */
-/* 1. 顶部工具栏                                               */
+/* 1. 品牌搜索区                                                */
 /* =========================================================== */
 
-.toolbar {
-  padding: 16rpx 20rpx 12rpx;
+.search-hero {
+  position: relative;
+  background: linear-gradient(135deg, #07c160 0%, #06ad56 40%, #059e4e 100%);
+  padding: 40rpx 32rpx 80rpx;
+  overflow: hidden;
+}
+
+.search-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.search-hero-bg::before {
+  content: '';
+  position: absolute;
+  top: -150rpx;
+  right: -60rpx;
+  width: 400rpx;
+  height: 400rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.search-hero-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -180rpx;
+  left: -80rpx;
+  width: 500rpx;
+  height: 500rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.search-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.search-hero-title {
+  font-size: 48rpx;
+  font-weight: 800;
+  color: #fff;
+  display: block;
+  letter-spacing: 2rpx;
+}
+
+.search-hero-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.75);
+  display: block;
+  margin-top: 10rpx;
+  letter-spacing: 0.5rpx;
+}
+
+/* =========================================================== */
+/* 2. 搜索栏（悬浮卡片）                                        */
+/* =========================================================== */
+
+.search-bar-card {
   background: #fff;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
+  border-radius: var(--radius-xl);
+  padding: 20rpx 24rpx;
+  margin: -48rpx 20rpx 0;
+  box-shadow: 0 8rpx 32rpx rgba(7, 193, 96, 0.12);
+  position: relative;
+  z-index: 2;
 }
 
 .search-row {
@@ -28,9 +93,9 @@
   height: 72rpx;
   background: var(--gray-2);
   border-radius: var(--radius-round);
-  padding: 0 12rpx 0 20rpx;
-  gap: 8rpx;
-  transition: background 0.2s;
+  padding: 0 12rpx 0 24rpx;
+  gap: 10rpx;
+  transition: all 0.2s;
 }
 
 .search-row:focus-within {
@@ -41,19 +106,18 @@
 .search-icon {
   font-size: 28rpx;
   flex-shrink: 0;
-  padding: 8rpx 4rpx;
 }
 
 .search-input {
   flex: 1;
-  font-size: var(--font-md);
+  font-size: var(--font-lg);
   color: var(--gray-8);
   height: 100%;
 }
 
 .search-ph {
   color: var(--gray-5);
-  font-size: 22rpx;
+  font-size: 24rpx;
 }
 
 .search-clear {
@@ -63,29 +127,32 @@
   padding: 8rpx 12rpx;
 }
 
-.toolbar-btns {
+.search-bar-actions {
   display: flex;
   gap: 12rpx;
-  flex-shrink: 0;
+  margin-top: 14rpx;
 }
 
 .btn-add {
-  height: 64rpx;
-  line-height: 64rpx;
-  padding: 0 24rpx;
+  width: 100%;
+  height: 72rpx;
+  line-height: 72rpx;
   background: var(--primary-gradient);
   color: #fff;
   border-radius: var(--radius-round);
-  font-size: var(--font-md);
+  font-size: var(--font-lg);
   display: flex;
   align-items: center;
-  gap: 6rpx;
-  box-shadow: 0 4rpx 12rpx rgba(7, 193, 96, 0.3);
+  justify-content: center;
+  gap: 8rpx;
+  box-shadow: 0 4rpx 16rpx rgba(7, 193, 96, 0.3);
+  font-weight: 600;
+  letter-spacing: 2rpx;
 }
 
 .btn-add:active {
   opacity: 0.85;
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 .btn-icon {
@@ -93,83 +160,117 @@
 }
 
 /* =========================================================== */
-/* 2. 筛选区域（可滚动）                                       */
+/* 3. 筛选区                                                    */
 /* =========================================================== */
 
 .filter-scroll-area {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  padding: 16rpx 20rpx 40rpx;
 }
 
 .filter-section {
-  padding: 16rpx 20rpx 40rpx;
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  gap: 16rpx;
 }
 
-.filter-block {
+/* ── 筛选卡片 ── */
+.filter-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 24rpx 24rpx 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  border: 2rpx solid var(--gray-2);
+  transition: border-color 0.2s;
+}
+
+.filter-card:active {
+  border-color: var(--primary-light);
+}
+
+.filter-card-header {
   display: flex;
-  align-items: flex-start;
-  gap: 12rpx;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
 }
 
-.filter-label {
-  font-size: var(--font-xs);
-  color: var(--gray-6);
-  flex-shrink: 0;
-  width: 6em;
-  padding-top: 8rpx;
+.filter-card-icon {
+  font-size: 28rpx;
 }
 
-.filter-col {
+.filter-card-title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--gray-8);
   flex: 1;
-  min-width: 0;
 }
 
-.filter-scroll {
+.filter-card-selected {
+  font-size: 20rpx;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-round);
+  font-weight: 500;
+  max-width: 200rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── 标签滚动 ── */
+.tag-scroll {
   display: flex;
   flex-direction: row;
   white-space: nowrap;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  flex: 1;
+  padding: 4rpx 0;
 }
 
 .filter-tag {
   display: inline-flex;
   align-items: center;
-  height: 52rpx;
-  padding: 0 22rpx;
-  margin-right: 10rpx;
+  height: 56rpx;
+  padding: 0 26rpx;
+  margin-right: 12rpx;
   background: var(--gray-2);
   border-radius: var(--radius-round);
-  font-size: var(--font-xs);
+  font-size: var(--font-md);
   color: var(--gray-7);
   white-space: nowrap;
   flex-shrink: 0;
   transition: all 0.2s;
+  font-weight: 500;
+}
+
+.filter-tag:active {
+  transform: scale(0.94);
 }
 
 .filter-tag.active {
   background: var(--primary);
   color: #fff;
   font-weight: 600;
-  box-shadow: 0 2rpx 8rpx rgba(7, 193, 96, 0.25);
+  box-shadow: 0 2rpx 10rpx rgba(7, 193, 96, 0.25);
 }
 
+/* ── 搜索输入框 ── */
 .filter-search-input {
   width: 100%;
-  height: 56rpx;
+  height: 60rpx;
   background: var(--gray-2);
   border-radius: var(--radius-md);
-  padding: 0 18rpx;
-  font-size: var(--font-xs);
+  padding: 0 20rpx;
+  font-size: var(--font-md);
   color: var(--gray-8);
   box-sizing: border-box;
-  margin-bottom: 6rpx;
+  margin-bottom: 8rpx;
   border: 2rpx solid transparent;
+  transition: all 0.2s;
 }
 
 .filter-search-input:focus {
@@ -177,33 +278,46 @@
   border-color: var(--primary);
 }
 
+/* ── 筛选激活提示 ── */
+.filter-active-tip {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  font-size: 20rpx;
+  color: var(--gray-5);
+  margin-top: 4rpx;
+  padding-left: 4rpx;
+}
+
+.filter-active-value {
+  color: var(--primary);
+  font-weight: 500;
+}
+
 /* =========================================================== */
-/* 3. 搜索按钮                                                 */
+/* 4. 搜索按钮                                                 */
 /* =========================================================== */
 
 .search-submit-btn {
   width: 100%;
-  height: 88rpx;
-  line-height: 88rpx;
+  height: 96rpx;
+  line-height: 96rpx;
   text-align: center;
   background: var(--primary-gradient);
   color: #fff;
   border-radius: var(--radius-round);
-  font-size: var(--font-xl);
+  font-size: 34rpx;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12rpx;
-  box-shadow: 0 4rpx 16rpx rgba(7, 193, 96, 0.35);
+  box-shadow: 0 6rpx 24rpx rgba(7, 193, 96, 0.35);
   margin-top: 8rpx;
+  letter-spacing: 4rpx;
 }
 
 .search-submit-btn:active {
   opacity: 0.85;
   transform: scale(0.97);
-}
-
-.search-submit-icon {
-  font-size: 36rpx;
 }

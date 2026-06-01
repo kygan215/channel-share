@@ -1,50 +1,79 @@
 /* =========================================================== */
-/* 设置页面样式                                                */
+/* 设置页面 — 卡片式管理面板（v2）                              */
 /* =========================================================== */
 
 .page {
   padding: 24rpx;
   min-height: 100vh;
   box-sizing: border-box;
+  background: var(--gray-1);
 }
 
-/* ---- 分区 ---- */
+/* =========================================================== */
+/* 分区卡片                                                    */
+/* =========================================================== */
+
 .section {
   background: #fff;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   margin-bottom: 24rpx;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  border: 2rpx solid var(--gray-2);
 }
 
 .section-header {
-  padding: 28rpx 24rpx 8rpx;
+  padding: 28rpx 28rpx 12rpx;
+  border-bottom: 2rpx solid var(--gray-2);
+  position: relative;
+}
+
+/* 左侧绿色装饰条 */
+.section-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 28rpx;
+  bottom: 12rpx;
+  width: 6rpx;
+  background: var(--primary);
+  border-radius: 0 4rpx 4rpx 0;
 }
 
 .section-title {
-  font-size: var(--font-lg);
+  font-size: var(--font-xl);
   font-weight: 700;
   color: var(--gray-8);
+  padding-left: 16rpx;
 }
 
 .section-desc {
   display: block;
   font-size: var(--font-xs);
   color: var(--gray-5);
-  margin-top: 4rpx;
+  margin-top: 6rpx;
+  padding-left: 16rpx;
 }
 
-/* ---- 开关项 ---- */
+/* =========================================================== */
+/* 开关项（带图标和标签）                                      */
+/* =========================================================== */
+
 .toggle-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24rpx 24rpx;
+  padding: 24rpx 28rpx;
   border-bottom: 2rpx solid var(--gray-2);
+  transition: background 0.15s;
 }
 
 .toggle-item:last-child {
   border-bottom: none;
+}
+
+.toggle-item:active {
+  background: var(--gray-1);
 }
 
 .toggle-info {
@@ -57,6 +86,8 @@
 .toggle-icon {
   font-size: 36rpx;
   flex-shrink: 0;
+  width: 48rpx;
+  text-align: center;
 }
 
 .toggle-text {
@@ -67,7 +98,7 @@
 
 .toggle-label {
   font-size: var(--font-lg);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--gray-8);
 }
 
@@ -76,128 +107,43 @@
   color: var(--gray-5);
 }
 
-/* ---- 菜单项 ---- */
-.menu-item {
-  display: flex;
-  align-items: center;
-  padding: 28rpx 24rpx;
-  border-bottom: 2rpx solid var(--gray-2);
-  gap: 16rpx;
-}
+/* =========================================================== */
+/* 信息项（手机号、角色展示）                                  */
+/* =========================================================== */
 
-.menu-item:last-child {
-  border-bottom: none;
-}
-
-.menu-item:active {
-  background: var(--gray-1);
-}
-
-.menu-item-icon {
-  font-size: 36rpx;
-  flex-shrink: 0;
-}
-
-.menu-item-text {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2rpx;
-}
-
-.menu-item-label {
-  font-size: var(--font-lg);
-  font-weight: 500;
-  color: var(--gray-8);
-}
-
-.menu-item-desc {
-  font-size: 20rpx;
-  color: var(--gray-5);
-}
-
-.menu-item-arrow {
-  font-size: 36rpx;
-  color: var(--gray-5);
-  flex-shrink: 0;
-}
-
-.menu-item-value {
-  font-size: var(--font-md);
-  color: var(--gray-5);
-}
-
-/* ---- 信息项（手机号） ---- */
 .info-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24rpx 24rpx;
+  padding: 24rpx 28rpx;
   border-bottom: 2rpx solid var(--gray-2);
+  transition: background 0.15s;
 }
 
 .info-item:last-child {
   border-bottom: none;
 }
 
+.info-item:active {
+  background: var(--gray-1);
+}
+
 .info-label {
   font-size: var(--font-lg);
   color: var(--gray-7);
   flex-shrink: 0;
-}
-
-.info-right {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
+  font-weight: 500;
 }
 
 .info-value {
   font-size: var(--font-lg);
   color: var(--gray-8);
-  font-weight: 500;
+  font-weight: 600;
 }
 
-.info-value.empty {
-  color: var(--gray-5);
-  font-weight: 400;
-}
-
-.info-btn {
-  height: 48rpx;
-  line-height: 48rpx;
-  padding: 0 18rpx;
-  background: var(--primary-light);
-  color: var(--primary);
-  border-radius: var(--radius-round);
-  font-size: 22rpx;
-  font-weight: 500;
-}
-
-.info-btn:active {
-  opacity: 0.7;
-}
-
-.info-input {
-  height: 64rpx;
-  width: 240rpx;
-  background: var(--gray-2);
-  border-radius: var(--radius-sm);
-  padding: 0 20rpx;
-  font-size: var(--font-lg);
-  color: var(--gray-8);
-  text-align: right;
-  box-sizing: border-box;
-}
-
-/* ---- 管理员设置 ---- */
 .admin-role {
-  color: #07c160;
+  color: var(--primary);
   font-weight: 700;
-}
-
-.admin-mgmt {
-  border-top: 2rpx solid var(--gray-2);
 }
 
 .info-value-row {
@@ -217,6 +163,45 @@
   white-space: nowrap;
 }
 
+.info-input {
+  height: 64rpx;
+  width: 200rpx;
+  background: var(--gray-2);
+  border-radius: var(--radius-md);
+  padding: 0 20rpx;
+  font-size: var(--font-lg);
+  color: var(--gray-8);
+  text-align: right;
+  box-sizing: border-box;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
+}
+
+.info-input:focus {
+  background: #fff;
+  border-color: var(--primary);
+}
+
+.info-btn {
+  height: 52rpx;
+  line-height: 52rpx;
+  padding: 0 22rpx;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-round);
+  font-size: 22rpx;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.info-btn:active {
+  opacity: 0.8;
+}
+
+/* =========================================================== */
+/* 按钮样式                                                    */
+/* =========================================================== */
+
 .mini-btn {
   height: 48rpx;
   line-height: 48rpx;
@@ -226,7 +211,6 @@
   border-radius: var(--radius-round);
   font-size: 22rpx;
   font-weight: 500;
-  border: none;
   flex-shrink: 0;
 }
 
@@ -244,25 +228,61 @@
   color: #ff4d4f;
 }
 
+.full-btn {
+  width: 100%;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: var(--radius-md);
+  font-size: var(--font-lg);
+  font-weight: 600;
+  margin-top: 8rpx;
+}
+
+.full-btn:active {
+  opacity: 0.85;
+}
+
+/* =========================================================== */
+/* 管理员管理                                                  */
+/* =========================================================== */
+
+.admin-mgmt {
+  border-top: 2rpx solid var(--gray-2);
+  margin-top: 0;
+}
+
+.admin-mgmt .info-item {
+  color: var(--primary);
+  font-weight: 600;
+}
+
 .add-admin-row {
   display: flex;
   align-items: center;
   gap: 12rpx;
-  padding: 16rpx 24rpx;
+  padding: 16rpx 28rpx;
+  border-top: 2rpx solid var(--gray-2);
+  background: var(--gray-1);
 }
 
 .add-input {
   width: auto;
   flex: 1;
   text-align: left;
+  background: #fff;
 }
 
 .user-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16rpx 24rpx;
+  padding: 16rpx 28rpx;
   border-top: 2rpx solid var(--gray-2);
+  transition: background 0.15s;
+}
+
+.user-item:active {
+  background: var(--gray-1);
 }
 
 .user-info {
@@ -286,36 +306,50 @@
   color: var(--gray-5);
 }
 
-/* ---- 白名单 ---- */
+/* =========================================================== */
+/* 白名单管理                                                  */
+/* =========================================================== */
+
 .whitelist-add-section {
-  padding: 16rpx 24rpx;
+  padding: 16rpx 28rpx;
   border-top: 2rpx solid var(--gray-2);
+  background: var(--gray-1);
 }
 
 .whitelist-textarea {
   width: 100%;
   height: 160rpx;
-  background: var(--gray-2);
-  border-radius: var(--radius-sm);
+  background: #fff;
+  border-radius: var(--radius-md);
   padding: 16rpx 20rpx;
   font-size: 24rpx;
   color: var(--gray-8);
   box-sizing: border-box;
-  margin-bottom: 16rpx;
+  margin-bottom: 12rpx;
+  border: 2rpx solid var(--gray-3);
+  transition: border-color 0.2s;
 }
 
-.full-btn {
-  width: 100%;
-  height: 72rpx;
-  line-height: 72rpx;
-  border-radius: var(--radius-md);
-  font-size: var(--font-lg);
-  font-weight: 600;
+.whitelist-textarea:focus {
+  border-color: var(--primary);
 }
 
 .empty-tip {
-  padding: 32rpx 24rpx;
+  padding: 40rpx 28rpx;
   text-align: center;
   font-size: 24rpx;
   color: var(--gray-5);
+}
+
+/* =========================================================== */
+/* 动画                                                        */
+/* =========================================================== */
+
+.slide-up {
+  animation: slideUp 0.35s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to { opacity: 1; transform: translateY(0); }
 }

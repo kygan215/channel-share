@@ -7,19 +7,8 @@
     <text class="app-version">{{appVersion}}</text>
   </view>
 
-  <!-- ==================== 手机号信息 ==================== -->
-  <view class="section">
-    <view class="section-header">
-      <text class="section-title">📱 手机号信息</text>
-    </view>
-    <view class="info-item">
-      <text class="info-label">已绑定手机号</text>
-      <text class="info-value">{{phone}}</text>
-    </view>
-  </view>
-
   <!-- ==================== 功能概览 ==================== -->
-  <view class="section">
+  <view class="section slide-up">
     <view class="section-header">
       <text class="section-title">🚀 功能介绍</text>
     </view>
@@ -70,7 +59,7 @@
   </view>
 
   <!-- ==================== 关于我们 ==================== -->
-  <view class="section">
+  <view class="section slide-up">
     <view class="section-header">
       <text class="section-title">ℹ️ 关于我们</text>
     </view>
@@ -87,8 +76,8 @@
     </view>
   </view>
 
-  <!-- ==================== 隐私政策 ==================== -->
-  <view class="section">
+  <!-- ==================== 隐私与安全 ==================== -->
+  <view class="section slide-up">
     <view class="section-header">
       <text class="section-title">🔒 隐私与安全</text>
     </view>
@@ -103,7 +92,7 @@
   </view>
 
   <!-- ==================== 联系我们 ==================== -->
-  <view class="section">
+  <view class="section slide-up">
     <view class="section-header">
       <text class="section-title">📞 联系我们</text>
     </view>
@@ -115,6 +104,11 @@
       </view>
       <text class="contact-arrow">›</text>
     </view>
+  </view>
+
+  <!-- ==================== 底部版权 ==================== -->
+  <view class="footer-copyright">
+    <text class="copyright-text">© 2026 促销信息共享 v{{appVersion}}</text>
   </view>
 
 </view>
