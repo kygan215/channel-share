@@ -24,7 +24,7 @@ Page({
   // ============================================================
   data: {
     // 首页统计（显示在页面顶部的四个数字）
-    stats: { total: 0, hired: 0, quality: 0, provinces: 0 },
+    stats: { total: 0, hired: 0, quality: 0, provinces: 0, avgAge: '-', ageCount: 0 },
 
     // 隐私协议相关
     privacyAgreed: false,   // true=已同意隐私协议（控制弹窗显隐）
@@ -91,10 +91,8 @@ Page({
       if (!this.data.authChecked) {
         await this._checkAccess();
       }
-      // 有权限才加载首页数据
-      if (this.data.authorized) {
-        this.loadStats();
-      }
+      // 所有人（包括未授权用户）都能加载自己的统计数据
+      this.loadStats();
     }
   },
 
@@ -228,6 +226,25 @@ Page({
   },
   goToManage() {
     wx.navigateTo({ url: '/pages/manage/manage' });
+  },
+
+  // ============================================================
+  // 统计卡片导航：跳转到查询结果页（带预设筛选条件）
+  // ============================================================
+
+  // 全部促销员 / 覆盖省份 → 无筛选，显示全部
+  goToAllPromoters() {
+    wx.navigateTo({ url: '/pages/query-results/query-results' });
+  },
+
+  // 在岗 → 筛选 hired=1
+  goToHired() {
+    wx.navigateTo({ url: '/pages/query-results/query-results?hired=1' });
+  },
+
+  // 优质 → 筛选 tag=quality
+  goToQuality() {
+    wx.navigateTo({ url: '/pages/query-results/query-results?tag=quality' });
   },
 
   // ============================================================

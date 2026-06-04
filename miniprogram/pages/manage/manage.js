@@ -4,7 +4,7 @@
 // ============================================================
 
 const { getProvinces, getCities, getDistricts } = require('../../utils/regions');
-const { getUserId, getAllChannels, checkAuth, checkWhitelist, getMyNickname, processData, getSettings } = require('../../utils/channel-service');
+const { getUserId, getAllChannels, checkAuth, getMyNickname, processData, getSettings } = require('../../utils/channel-service');
 
 Page({
   data: {
@@ -26,8 +26,13 @@ Page({
     districtFilterSearchText: '',
     sortIndex: 0,
     sortOptions: ['序号升序', '序号降序', '省份A-Z', '省份Z-A'],
-    tagOptions: ['全部', '⚫ 黑名单', '⭐ 优质临促'],
+    tagOptions: ['全部', '⚫ 黑名单', '⭐ 优质临促', '✅ 在岗'],
     selectedTag: '',
+    selectedHired: false,
+    selectedAgeMin: '',
+    selectedAgeMax: '',
+    allKaTags: [],
+    selectedKaTags: [],
     loading: true,
     refreshing: false,
 
@@ -58,33 +63,53 @@ Page({
     canPromoter: true,
     canReview: true,
 
+    // 个人模式提示（非授权用户只看自己添加的数据）
+    showOwnScopeHint: false,
+
     // 健康证审核
     reviewModal: false,
     reviewRecord: null,
     reviewCertUrl: '',
     rejectReason: '',
 
-    // 手机号验证
-    userRole: '',
-    showPhoneAuth: false,
-    phoneInput: '',
+    // 搜索状态
+    searching: false,
+    resultCount: 0,
+    scrollToView: '',
+    showBackTop: false,
+
+    // 聘用弹窗
+    hireModal: false,
+    hireRecord: null,
+    hireStartDate: '',
+    hireEndDate: '',
+    todayDate: '',
+
+    // 解聘弹窗
+    unhireModal: false,
+    unhireRecord: null,
+    unhireComment: '',
   },
 
   onLoad() {
     wx.setNavigationBarTitle({ title: '促销管理' });
+    // 设置今天的日期作为日期选择器的最小值
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    this.setData({ todayDate: `${y}-${m}-${d}` });
   },
 
   async onShow() {
     this.setData({
       currentUserId: await getUserId(),
-      userRole: '',
-      showPhoneAuth: false,
-      phoneInput: '',
+      showOwnScopeHint: false,
     });
 
     const auth = await checkAuth();
 
-    // 管理员：完整权限
+    // 管理员：完整权限，看到全部数据
     if (auth.isAdmin) {
       const settings = getSettings();
       this.setData({
@@ -99,25 +124,11 @@ Page({
       return;
     }
 
-    // Viewer（白名单已验证的查看者）：只能看
+    // Viewer（白名单用户）：完整操作权限，看到全部数据
     if (auth.isViewer) {
-      this.setData({
-        userRole: 'viewer',
-        canAdd: false,
-        canEdit: false,
-        canDelete: false,
-        canPromoter: false,
-        canReview: false,
-      });
-      this.fetchData();
-      return;
-    }
-
-    // 尚未注册到系统中：放行，首次调用云函数会自动注册第一个用户为管理员
-    if (!auth.registered) {
       const settings = getSettings();
       this.setData({
-        userRole: 'admin',
+        userRole: 'viewer',
         canAdd: settings.canAdd,
         canEdit: settings.canEdit,
         canDelete: settings.canDelete,
@@ -128,48 +139,20 @@ Page({
       return;
     }
 
-    // 已注册但未在白名单：弹手机号验证
-    this.setData({ showPhoneAuth: true, loading: false });
+    // 普通用户：正常使用，但后端只返回自己添加的记录
+    const settings = getSettings();
+    this.setData({
+      userRole: 'normal',
+      canAdd: settings.canAdd,
+      canEdit: settings.canEdit,
+      canDelete: settings.canDelete,
+      canPromoter: settings.canPromoter,
+      canReview: false,           // 普通用户不能审核健康证
+      showOwnScopeHint: true,     // 在顶部显示提示条
+    });
+    this.fetchData();
   },
 
-  // ==================== 手机号白名单验证 ====================
-
-  onPhoneAuthInput(e) {
-    this.setData({ phoneInput: e.detail.value });
-  },
-
-  async submitPhoneAuth() {
-    const phone = this.data.phoneInput.trim();
-    if (!phone || !/^1\d{10}$/.test(phone)) {
-      wx.showToast({ title: '请输入正确的手机号', icon: 'none' });
-      return;
-    }
-
-    wx.showLoading({ title: '验证中...' });
-    const result = await checkWhitelist(phone);
-    wx.hideLoading();
-
-    if (result.success) {
-      wx.showToast({ title: '验证通过', icon: 'success' });
-      this.setData({
-        showPhoneAuth: false,
-        userRole: 'viewer',
-        canAdd: false,
-        canEdit: false,
-        canDelete: false,
-        canPromoter: false,
-        canReview: false,
-      });
-      this.fetchData();
-    } else {
-      wx.showModal({
-        title: '验证失败',
-        content: result.message || '手机号不在白名单中，请联系管理员',
-        showCancel: false,
-        confirmText: '知道了',
-      });
-    }
-  },
 
   async fetchData() {
     this.setData({ loading: true });
@@ -195,10 +178,19 @@ Page({
 
     const provinces = ['全部省份', ...getProvinces()];
 
+    // 收集所有卖场经验标签
+    const kaTagSet = new Set();
+    channels.forEach((item) => {
+      const tags = Array.isArray(item.kaTags) ? item.kaTags : [];
+      tags.forEach((t) => { if (t) kaTagSet.add(t); });
+    });
+    const allKaTags = Array.from(kaTagSet).sort();
+
     this.setData({
       allData: channels,
       provinces,
       displayProvinces: provinces,
+      allKaTags,
       provinceFilterSearchText: '',
       selectedProvince: '全部省份',
       selectedCity: '全部城市',
@@ -218,6 +210,10 @@ Page({
       allData: this.data.allData,
       searchText: this.data.searchText,
       selectedTag: this.data.selectedTag,
+      selectedHired: this.data.selectedHired,
+      selectedAgeMin: this.data.selectedAgeMin,
+      selectedAgeMax: this.data.selectedAgeMax,
+      selectedKaTags: this.data.selectedKaTags,
       selectedProvince: this.data.selectedProvince,
       selectedCity: this.data.selectedCity,
       selectedDistrict: this.data.selectedDistrict,
@@ -226,10 +222,41 @@ Page({
       sortOptions: this.data.sortOptions,
       currentUserId: this.data.currentUserId,
     });
-    this.setData({ groupedData: groups });
+    const count = groups.reduce((sum, g) => sum + g.items.length, 0);
+    this.setData({ groupedData: groups, resultCount: count });
+  },
+
+  // 搜索按钮点击：给用户反馈，自动滚动到结果
+  doSearch() {
+    this.setData({ searching: true, scrollToView: '' });
+    this.runProcessData();
+    // 滚动到列表顶部（展示结果第一条）
+    this.setData({ scrollToView: 'result-anchor' });
+    setTimeout(() => {
+      this.setData({ searching: false });
+    }, 600);
+  },
+
+  // ==================== 回到顶部 ====================
+
+  // 监听滚动位置，决定是否显示回到顶部按钮
+  onScroll(e) {
+    const top = e.detail.scrollTop;
+    this.setData({ showBackTop: top > 600 });
+  },
+
+  // 点击回到顶部
+  goToTop() {
+    this.setData({ scrollToView: '' });
+    // 给筛选区第一个元素加个锚点，滚动到它
+    setTimeout(() => {
+      this.setData({ scrollToView: 'filter-top-anchor' });
+    }, 50);
   },
 
   async refreshData() {
+    // 清除缓存，确保拿到最新数据
+    wx.removeStorageSync('channels_cache');
     const channels = await getAllChannels();
     this.setData({ allData: channels });
     this.runProcessData();
@@ -349,8 +376,41 @@ Page({
 
   onTagSelect(e) {
     const idx = Number(e.currentTarget.dataset.index);
-    const map = ['', 'blacklist', 'quality'];
-    this.setData({ selectedTag: map[idx] || '' });
+    const map = ['', 'blacklist', 'quality', 'hired'];
+    const tag = map[idx] || '';
+    this.setData({
+      selectedTag: tag,
+      selectedHired: tag === 'hired',
+    });
+    this.runProcessData();
+  },
+
+  // ==================== 年龄范围筛选 ====================
+
+  onAgeMinInput(e) {
+    this.setData({ selectedAgeMin: e.detail.value });
+    if (this.data._searchTimer) clearTimeout(this.data._searchTimer);
+    this.data._searchTimer = setTimeout(() => this.runProcessData(), 300);
+  },
+
+  onAgeMaxInput(e) {
+    this.setData({ selectedAgeMax: e.detail.value });
+    if (this.data._searchTimer) clearTimeout(this.data._searchTimer);
+    this.data._searchTimer = setTimeout(() => this.runProcessData(), 300);
+  },
+
+  // ==================== 卖场经验筛选 ====================
+
+  onKaTagSelect(e) {
+    const tag = e.currentTarget.dataset.tag;
+    let selected = [...this.data.selectedKaTags];
+    const idx = selected.indexOf(tag);
+    if (idx !== -1) {
+      selected.splice(idx, 1);
+    } else {
+      selected.push(tag);
+    }
+    this.setData({ selectedKaTags: selected });
     this.runProcessData();
   },
 
@@ -379,6 +439,175 @@ Page({
 
   goToAdd() {
     wx.navigateTo({ url: '/pages/add/add' });
+  },
+
+  goToSettings() {
+    wx.navigateTo({ url: '/pages/settings/settings' });
+  },
+
+  // ==================== 聘用（带时间区段）====================
+
+  getHireIdentity() {
+    const userInfo = wx.getStorageSync('userInfo') || {};
+    const parts = [userInfo.province, userInfo.city, userInfo.position, userInfo.nickname].filter(Boolean);
+    return parts.join(' · ') || '未知用户';
+  },
+
+  // 打开聘用弹窗 — 让用户选择聘用时间区段
+  openHireModal(e) {
+    const id = Number(e.currentTarget.dataset.id);
+    const record = this.data.allData.find(item => item.id === id);
+    if (!record) return;
+
+    // 默认：起始日期=今天，结束日期=今天+3天
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    const startDate = `${y}-${m}-${d}`;
+
+    const endDate = new Date(today);
+    endDate.setDate(endDate.getDate() + 3);
+    const ey = endDate.getFullYear();
+    const em = String(endDate.getMonth() + 1).padStart(2, '0');
+    const ed = String(endDate.getDate()).padStart(2, '0');
+    const endDateStr = `${ey}-${em}-${ed}`;
+
+    this.setData({
+      hireModal: true,
+      hireRecord: record,
+      hireStartDate: startDate,
+      hireEndDate: endDateStr,
+    });
+  },
+
+  // 关闭聘用弹窗
+  closeHireModal() {
+    this.setData({
+      hireModal: false,
+      hireRecord: null,
+      hireStartDate: '',
+      hireEndDate: '',
+    });
+  },
+
+  // 聘用起始日期变更
+  onHireStartDateChange(e) {
+    const startDate = e.detail.value;
+    // 如果结束日期 < 新的起始日期，自动顺延结束日期
+    let endDate = this.data.hireEndDate;
+    if (endDate && endDate < startDate) {
+      // 把结束日期设为起始日期+3天
+      const sd = new Date(startDate);
+      const ed = new Date(sd);
+      ed.setDate(ed.getDate() + 3);
+      const ey = ed.getFullYear();
+      const em = String(ed.getMonth() + 1).padStart(2, '0');
+      const edStr = String(ed.getDate()).padStart(2, '0');
+      endDate = `${ey}-${em}-${edStr}`;
+    }
+    this.setData({ hireStartDate: startDate, hireEndDate: endDate });
+  },
+
+  // 聘用结束日期变更
+  onHireEndDateChange(e) {
+    const endDate = e.detail.value;
+    const startDate = this.data.hireStartDate;
+    if (endDate < startDate) {
+      wx.showToast({ title: '结束日期不能早于开始日期', icon: 'none' });
+      return;
+    }
+    this.setData({ hireEndDate: endDate });
+  },
+
+  // 确认聘用（带时间区段提交）
+  async confirmHire() {
+    const record = this.data.hireRecord;
+    const hireStartDate = this.data.hireStartDate;
+    const hireEndDate = this.data.hireEndDate;
+
+    if (!record) return;
+    if (!hireStartDate || !hireEndDate) {
+      wx.showToast({ title: '请选择完整的聘用时间', icon: 'none' });
+      return;
+    }
+    if (hireEndDate < hireStartDate) {
+      wx.showToast({ title: '结束日期不能早于开始日期', icon: 'none' });
+      return;
+    }
+
+    const hiredBy = this.getHireIdentity();
+
+    wx.showLoading({ title: '聘用中...', mask: true });
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'channel',
+        data: {
+          action: 'hire',
+          data: {
+            id: record.id,
+            hiredBy,
+            hireStartDate,
+            hireEndDate,
+          },
+        },
+      });
+      wx.hideLoading();
+      if (res.result && res.result.success) {
+        wx.showToast({ title: `已聘用 ${hireStartDate} ~ ${hireEndDate}` });
+        this.closeHireModal();
+        this.refreshData();
+      } else {
+        wx.showToast({ title: res.result?.message || '聘用失败', icon: 'none' });
+      }
+    } catch (err) {
+      wx.hideLoading();
+      wx.showToast({ title: '聘用失败', icon: 'none' });
+    }
+  },
+
+  openUnhireModal(e) {
+    const id = Number(e.currentTarget.dataset.id);
+    const record = this.data.allData.find(item => item.id === id);
+    this.setData({ unhireModal: true, unhireRecord: record, unhireComment: '' });
+  },
+
+  closeUnhireModal() {
+    this.setData({ unhireModal: false, unhireRecord: null, unhireComment: '' });
+  },
+
+  onUnhireCommentInput(e) {
+    this.setData({ unhireComment: e.detail.value });
+  },
+
+  async confirmUnhire() {
+    const record = this.data.unhireRecord;
+    const comment = this.data.unhireComment.trim();
+    if (!record || !comment) {
+      wx.showToast({ title: '请填写解聘评价', icon: 'none' });
+      return;
+    }
+
+    const unhireBy = this.getHireIdentity();
+
+    wx.showLoading({ title: '解聘中...', mask: true });
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'channel',
+        data: { action: 'unhire', data: { id: record.id, comment, unhireBy } },
+      });
+      wx.hideLoading();
+      if (res.result && res.result.success) {
+        wx.showToast({ title: '已解聘' });
+        this.closeUnhireModal();
+        this.refreshData();
+      } else {
+        wx.showToast({ title: res.result?.message || '解聘失败', icon: 'none' });
+      }
+    } catch (err) {
+      wx.hideLoading();
+      wx.showToast({ title: '解聘失败', icon: 'none' });
+    }
   },
 
   async deleteSingle(e) {

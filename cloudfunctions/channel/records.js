@@ -22,32 +22,43 @@ async function getDoc(numericId) {
 }
 
 // ============================================================
-// listChannels：获取促销员记录列表（支持分页 + 筛选）
+// listChannels：获取促销员记录列表（支持分页 + 筛选 + 按创建者过滤）
 // ============================================================
 // data：前端传的参数，可能包含：
 //   page（第几页，默认1）、pageSize（每页多少条，默认500）
 //   province（按省份筛选）、status（按状态筛选：hired/idle）
+//   filterOwn（是否只显示自己的记录，默认false）
+//   filterCreatorId（自己的openid，filterOwn=true时使用）
 // 返回：{ success, data（记录数组）, total（总数）, page, pageSize }
-async function listChannels(data) {
+async function listChannels(data, openid) {
+  // 每次查询列表前，先自动清理已过期的聘用记录
+  // ⚠️ 使用运行时 require 避免与 hire.js 的循环依赖
+  try {
+    const { autoExpireHired } = require('./hire');
+    const expireResult = await autoExpireHired();
+    if (expireResult.count > 0) {
+      console.log(`自动解聘了 ${expireResult.count} 条过期聘用`);
+    }
+  } catch (err) {
+    console.error('autoExpireHired error (non-fatal):', err);
+  }
   // 解析前端传来的参数，没有就用默认值
   const params = data || {};
   const page = params.page || 1;               // 当前页数
   const pageSize = Math.min(params.pageSize || 500, 500); // 每页最多500条
   const MAX_LIMIT = 100;  // 微信数据库单次最多只能取100条
 
-  // 先统计 channels 集合总共有多少条数据
-  const countResult = await db.collection('channels').count();
-  const total = countResult.total;  // 总记录数
-  // 如果一条数据都没有，直接返回空数组
-  if (total === 0) return { success: true, data: [], total: 0 };
-
   // 计算要跳过多少条（第2页就跳过前pageSize条）
   const skip = (page - 1) * pageSize;
 
-  // ---- 有筛选条件：按省份或状态过滤 ----
-  if (params.province || params.status) {
+  // ── 有筛选条件：按省份/状态/创建者过滤 ──
+  if (params.province || params.status || params.filterOwn) {
     // 构建查询条件
     let query = db.collection('channels');
+    // 非授权用户只能看自己创建的记录
+    if (params.filterOwn && params.creatorOpenid) {
+      query = query.where({ creatorUserId: params.creatorOpenid });
+    }
     if (params.status === 'hired') query = query.where({ hired: true });    // 只看在岗的
     else if (params.status === 'idle') query = query.where({ hired: false }); // 只看空闲的
     if (params.province) query = query.where({ province: params.province }); // 只看某个省
@@ -55,19 +66,16 @@ async function listChannels(data) {
     // 统计筛选后的总数
     const filteredCount = await query.count();
     const fTotal = filteredCount.total;
+    if (fTotal === 0) return { success: true, data: [], total: 0, page, pageSize };
 
     if (pageSize >= fTotal) {
       // 要取的数量 >= 总数 → 一次全部取完
-      // 计算需要分几次取（因为每次最多100条）
       const batchTimes = Math.ceil(fTotal / MAX_LIMIT);
       const tasks = [];
       for (let i = 0; i < batchTimes; i++) {
-        // 每次跳 i*100 条（第一次跳0，第二次跳100，第三次跳200...）
         tasks.push(query.skip(i * MAX_LIMIT).limit(MAX_LIMIT).get());
       }
-      // 并发执行所有请求（Promise.all 会等所有请求都完成）
       const results = await Promise.all(tasks);
-      // 把多次请求的结果合并成一个数组
       let items = [];
       results.forEach((r) => { items = items.concat(r.data); });
       return { success: true, data: items, total: fTotal, page, pageSize };
@@ -76,7 +84,6 @@ async function listChannels(data) {
       const batchTimes = Math.ceil(pageSize / MAX_LIMIT);
       const tasks = [];
       for (let i = 0; i < batchTimes; i++) {
-        // skip = 当前页的起始位置 + 第几次取
         tasks.push(query.skip(skip + i * MAX_LIMIT).limit(MAX_LIMIT).get());
       }
       const results = await Promise.all(tasks);
@@ -86,7 +93,42 @@ async function listChannels(data) {
     }
   }
 
-  // ---- 无筛选条件：取出全部数据 ----
+  // ── 非授权用户只看自己创建（无省份/状态筛选时） ──
+  if (params.filterOwn && params.creatorOpenid) {
+    const fQuery = db.collection('channels').where({ creatorUserId: params.creatorOpenid });
+    const fCountResult = await fQuery.count();
+    const fTotal = fCountResult.total;
+    if (fTotal === 0) return { success: true, data: [], total: 0 };
+
+    if (pageSize >= fTotal) {
+      const batchTimes = Math.ceil(fTotal / MAX_LIMIT);
+      const tasks = [];
+      for (let i = 0; i < batchTimes; i++) {
+        tasks.push(fQuery.skip(i * MAX_LIMIT).limit(MAX_LIMIT).get());
+      }
+      const results = await Promise.all(tasks);
+      let items = [];
+      results.forEach((r) => { items = items.concat(r.data); });
+      return { success: true, data: items, total: fTotal };
+    } else {
+      const batchTimes = Math.ceil(pageSize / MAX_LIMIT);
+      const tasks = [];
+      for (let i = 0; i < batchTimes; i++) {
+        tasks.push(fQuery.skip(skip + i * MAX_LIMIT).limit(MAX_LIMIT).get());
+      }
+      const results = await Promise.all(tasks);
+      let items = [];
+      results.forEach((r) => { items = items.concat(r.data); });
+      return { success: true, data: items, total: fTotal, page, pageSize };
+    }
+  }
+
+  // ── 无筛选条件：取出全部数据（管理员/白名单用户） ──
+  // 先统计 channels 集合总共有多少条数据
+  const countResult = await db.collection('channels').count();
+  const total = countResult.total;
+  if (total === 0) return { success: true, data: [], total: 0 };
+
   if (pageSize >= total) {
     // 一次取完所有数据
     const batchTimes = Math.ceil(total / MAX_LIMIT);

@@ -3,7 +3,7 @@
 // 功能：记录权限管理、手机号绑定
 // ============================================================
 
-const { checkAuth } = require('../../utils/channel-service');
+const { checkAuth, verifyMyWhitelist } = require('../../utils/channel-service');
 
 Page({
   data: {
@@ -150,6 +150,43 @@ Page({
   },
 
   // ============================================================
+  // 验证白名单身份
+  // ============================================================
+  async verifyWhitelist() {
+    const phone = this.data.phone.trim();
+    if (!phone) {
+      wx.showToast({ title: '请先输入手机号', icon: 'none' });
+      return;
+    }
+    if (!/^1\d{10}$/.test(phone)) {
+      wx.showToast({ title: '手机号格式不正确', icon: 'none' });
+      return;
+    }
+
+    wx.showLoading({ title: '验证中...' });
+    try {
+      const result = await verifyMyWhitelist(phone);
+      wx.hideLoading();
+      if (result.success) {
+        wx.showToast({ title: '🎉 验证通过！现在可以看到全部数据了', icon: 'success' });
+        // 清除权限缓存，重新加载身份
+        wx.removeStorageSync('auth_status');
+        await this.loadAdminInfo();
+      } else {
+        wx.showModal({
+          title: '未在白名单中',
+          content: result.message || '你的手机号尚未加入白名单，请联系管理员添加',
+          showCancel: false,
+          confirmText: '知道了',
+        });
+      }
+    } catch (err) {
+      wx.hideLoading();
+      wx.showToast({ title: '网络错误', icon: 'none' });
+    }
+  },
+
+  // ============================================================
   // 复制 OPENID
   // ============================================================
   copyOpenid() {
@@ -276,7 +313,17 @@ Page({
       });
       wx.hideLoading();
       if (res.result && res.result.success) {
-        wx.showToast({ title: `成功添加 ${res.result.added} 个`, icon: 'success' });
+        const errors = res.result.errors;
+        if (errors && errors.length > 0) {
+          wx.showModal({
+            title: `成功添加 ${res.result.added} 个`,
+            content: `以下手机号添加失败：\n${errors.join('\n')}`,
+            showCancel: false,
+            confirmText: '知道了',
+          });
+        } else {
+          wx.showToast({ title: `成功添加 ${res.result.added} 个`, icon: 'success' });
+        }
         this.setData({ showAddWhitelist: false, whitelistBatchText: '' });
         this.loadAdminInfo();
       } else {

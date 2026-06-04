@@ -60,6 +60,34 @@ exports.main = async (event) => {
     // 兼容旧版：如果系统里还没有任何管理员，第一个调用的用户自动变成管理员
     await auth.ensureAdminExistsCompat(openid);
 
+    // ──── list 操作特殊处理 ────
+    // 任何人都能查列表，但非授权用户只能看到自己添加的记录
+    if (action === 'list') {
+      const userRole = await auth.getUserRole(openid);
+      // 有角色（admin/viewer）→ 看到全部；没角色 → 只看自己的
+      return await records.listChannels({
+        ...data,
+        filterOwn: !userRole,
+        creatorOpenid: !userRole ? openid : '',
+      }, openid);
+    }
+
+    // ──── 基础CRUD和聘用操作允许任何人 ────
+    // 非授权用户也能增删改和聘用，后端函数内部会做所有权检查
+    const publicCrudActions = ['add', 'update', 'delete', 'hire', 'unhire', 'addComment', 'deleteComment'];
+    if (publicCrudActions.includes(action)) {
+      switch (action) {
+        case 'add':           return await records.addRecord(data, openid);
+        case 'update':        return await records.updateRecord(data, openid);
+        case 'delete':        return await records.deleteRecord(data, openid);
+        case 'hire':          return await hire.hirePromoter(data, openid);
+        case 'unhire':        return await hire.unhirePromoter(data, openid);
+        case 'addComment':    return await comments.addComment(data, openid);
+        case 'deleteComment': return await comments.deleteComment(data, openid);
+        default: break;
+      }
+    }
+
     // 查一下：这个操作允许哪些角色执行？
     // 如果在 actionPermissions 里没找到这个操作，默认只有 admin 才能用
     const allowedRoles = actionPermissions[action] || ['admin'];
@@ -72,17 +100,11 @@ exports.main = async (event) => {
     }
 
     // 权限通过 → 根据操作名路由到对应模块
+    // （add/update/delete/hire/unhire/addComment/deleteComment 已在上面处理）
     switch (action) {
-      case 'add':                  return await records.addRecord(data, openid);
-      case 'update':               return await records.updateRecord(data, openid);
-      case 'delete':               return await records.deleteRecord(data, openid);
       case 'getRecord':            return await records.getRecord(data);
-      case 'list':                 return await records.listChannels(data);
       case 'toggleLike':           return await comments.toggleLike(data, openid);
-      case 'addComment':           return await comments.addComment(data, openid);
-      case 'deleteComment':        return await comments.deleteComment(data, openid);
-      case 'hire':                 return await hire.hirePromoter(data, openid);
-      case 'unhire':               return await hire.unhirePromoter(data, openid);
+      case 'autoExpire':           return await hire.autoExpireHired();
       case 'batchAdd':             return await batch.batchAdd(data, openid);
       case 'batchDelete':          return await batch.batchDelete(data, openid);
       case 'migrate':              return await batch.migrateLocal(data, openid);

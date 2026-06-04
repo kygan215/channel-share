@@ -164,7 +164,7 @@
 /* =========================================================== */
 
 .filter-section {
-  padding: 16rpx 20rpx 20rpx;
+  padding: 16rpx 0 20rpx;
   background: var(--gray-1);
   display: flex;
   flex-direction: column;
@@ -375,9 +375,6 @@
 .healthcert-section {
   margin-top: 12rpx;
 }
-  font-weight: 600;
-  color: var(--gray-7);
-}
 
 .healthcert-actions {
   display: flex;
@@ -531,70 +528,369 @@
 }
 
 /* =========================================================== */
-/* 手机号白名单验证遮罩                                        */
+/* 聘用弹窗（选择时间区段）                                     */
 /* =========================================================== */
 
-.phone-auth-overlay {
+.hire-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  animation: maskIn 0.3s ease-out;
 }
 
-.phone-auth-box {
-  width: 560rpx;
+.hire-modal {
+  width: 620rpx;
+  max-height: 80vh;
   background: #fff;
   border-radius: 24rpx;
-  padding: 48rpx 40rpx;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  animation: slideUp 0.3s ease-out;
 }
 
-.phone-auth-title {
-  font-size: 36rpx;
+.hire-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 28rpx 16rpx;
+}
+
+.hire-title {
+  font-size: var(--font-2xl);
   font-weight: 700;
   color: var(--gray-8);
-  margin-bottom: 12rpx;
 }
 
-.phone-auth-desc {
-  font-size: 26rpx;
+.hire-close {
+  font-size: 36rpx;
   color: var(--gray-5);
-  margin-bottom: 36rpx;
-  text-align: center;
+  padding: 8rpx;
+  flex-shrink: 0;
 }
 
-.phone-auth-input {
-  width: 100%;
-  height: 80rpx;
+.hire-close:active {
+  color: var(--gray-7);
+}
+
+.hire-body {
+  padding: 0 28rpx 32rpx;
+}
+
+.hire-name {
+  font-size: var(--font-xl);
+  font-weight: 600;
+  color: var(--gray-8);
+  margin-bottom: 8rpx;
+}
+
+.hire-desc {
+  font-size: var(--font-md);
+  color: var(--gray-6);
+  margin-bottom: 28rpx;
+  display: block;
+}
+
+.hire-date-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.hire-date-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.hire-date-label {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--gray-6);
+}
+
+.hire-date-value {
+  height: 72rpx;
+  line-height: 72rpx;
   background: var(--gray-2);
   border-radius: var(--radius-md);
-  padding: 0 24rpx;
-  font-size: 32rpx;
+  padding: 0 20rpx;
+  font-size: var(--font-lg);
   color: var(--gray-8);
   text-align: center;
-  box-sizing: border-box;
-  margin-bottom: 32rpx;
+  font-weight: 600;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
 }
 
-.phone-auth-btn {
+.hire-date-value:active {
+  border-color: var(--primary);
+  background: #fff;
+}
+
+.hire-date-arrow {
+  font-size: 36rpx;
+  color: var(--gray-5);
+  margin-top: 36rpx;
+  flex-shrink: 0;
+}
+
+.hire-tips {
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+  padding: 16rpx 20rpx;
+  background: var(--primary-light);
+  border-radius: var(--radius-md);
+  margin-bottom: 28rpx;
+}
+
+.hire-tip-icon {
+  font-size: 24rpx;
+  flex-shrink: 0;
+  margin-top: 2rpx;
+}
+
+.hire-tip-text {
+  font-size: var(--font-sm);
+  color: var(--primary);
+  line-height: 1.5;
+}
+
+.hire-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.hire-btn {
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: var(--radius-md);
+  font-size: var(--font-lg);
+  font-weight: 600;
+}
+
+.hire-btn:active {
+  opacity: 0.8;
+}
+
+.btn-hire-confirm {
+  background: var(--primary-gradient);
+  color: #fff;
+}
+
+.btn-hire-cancel {
+  background: var(--gray-2);
+  color: var(--gray-7);
+}
+
+/* =========================================================== */
+/* 聘用期显示                                                   */
+/* =========================================================== */
+
+.hire-period-info {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 8rpx 0;
+  margin-top: 4rpx;
+}
+
+.hire-period-text {
+  font-size: var(--font-sm);
+  color: #3b7cff;
+  font-weight: 500;
+  background: #e8f4fd;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+/* =========================================================== */
+/* 解聘弹窗                                                     */
+/* =========================================================== */
+
+.unhire-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: maskIn 0.3s ease-out;
+}
+
+.unhire-desc {
+  font-size: var(--font-md);
+  color: var(--gray-7);
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.unhire-textarea {
+  width: 100%;
+  min-height: 120rpx;
+  background: var(--gray-2);
+  border-radius: var(--radius-md);
+  padding: 16rpx 20rpx;
+  font-size: var(--font-md);
+  color: var(--gray-8);
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+/* =========================================================== */
+/* 个人模式提示条                                               */
+/* =========================================================== */
+
+.scope-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 20rpx;
+  background: linear-gradient(135deg, #fff7e6, #fff3d6);
+  border-bottom: 2rpx solid #ffe0a0;
+  gap: 6rpx;
+  flex-wrap: wrap;
+}
+
+.scope-hint-icon {
+  font-size: 24rpx;
+}
+
+.scope-hint-text {
+  font-size: var(--font-sm);
+  color: #b8860b;
+  font-weight: 500;
+}
+
+.scope-hint-link {
+  font-size: var(--font-sm);
+  color: #3b7cff;
+  font-weight: 600;
+  text-decoration: underline;
+  padding: 4rpx 0;
+}
+
+.scope-hint-link:active {
+  opacity: 0.7;
+}
+
+/* =========================================================== */
+/* 年龄范围筛选                                                 */
+/* =========================================================== */
+
+.age-range-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 8rpx 0;
+}
+
+.age-input {
+  flex: 1;
+  height: 64rpx;
+  background: var(--gray-2);
+  border-radius: var(--radius-sm);
+  padding: 0 16rpx;
+  font-size: 28rpx;
+  color: var(--gray-8);
+  text-align: center;
+  min-width: 0;
+}
+
+.age-separator {
+  font-size: 28rpx;
+  color: var(--gray-5);
+  font-weight: 700;
+}
+
+/* =========================================================== */
+/* 搜索结果计数                                                 */
+/* =========================================================== */
+
+.filter-result-info {
+  padding: 12rpx 0 0;
+  text-align: center;
+}
+
+.filter-result-text {
+  font-size: 26rpx;
+  color: var(--gray-5);
+}
+
+.filter-result-num {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* =========================================================== */
+/* 搜索按钮                                                     */
+/* =========================================================== */
+
+.filter-search-btn-wrap {
+  padding: 16rpx 0;
+}
+
+.filter-search-btn {
   width: 100%;
   height: 80rpx;
   line-height: 80rpx;
   background: var(--primary-gradient);
   color: #fff;
-  border-radius: var(--radius-md);
-  font-size: 32rpx;
-  font-weight: 600;
+  border-radius: var(--radius-round);
+  font-size: 30rpx;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 2rpx;
 }
 
-.phone-auth-btn:active {
+.filter-search-btn:active,
+.search-btn-hover {
+  opacity: 0.85;
+  transform: scale(0.96);
+}
+
+/* =========================================================== */
+/* 回到顶部按钮                                                 */
+/* =========================================================== */
+
+.back-to-top {
+  position: fixed;
+  right: 32rpx;
+  bottom: 80rpx;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: var(--primary-gradient);
+  color: #fff;
+  font-size: 40rpx;
+  line-height: 88rpx;
+  text-align: center;
+  box-shadow: 0 4rpx 20rpx rgba(7, 193, 96, 0.4);
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(40rpx);
+  transition: all 0.25s ease-out;
+  pointer-events: none;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.back-to-top-hover {
   opacity: 0.8;
+  transform: scale(0.9);
 }

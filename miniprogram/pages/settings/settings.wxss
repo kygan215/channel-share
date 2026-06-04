@@ -342,6 +342,40 @@
 }
 
 /* =========================================================== */
+/* 白名单验证提示                                              */
+/* =========================================================== */
+
+.verify-hint {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  padding: 16rpx 28rpx 24rpx;
+  background: #fffbe6;
+  border-bottom: 2rpx solid var(--gray-2);
+}
+
+.verify-hint-text {
+  font-size: 20rpx;
+  color: #b8860b;
+  line-height: 1.5;
+}
+
+.verify-btn {
+  height: 64rpx;
+  line-height: 64rpx;
+  background: var(--primary-gradient);
+  color: #fff;
+  border-radius: var(--radius-md);
+  font-size: var(--font-md);
+  font-weight: 600;
+  text-align: center;
+}
+
+.verify-btn:active {
+  opacity: 0.85;
+}
+
+/* =========================================================== */
 /* 动画                                                        */
 /* =========================================================== */
 

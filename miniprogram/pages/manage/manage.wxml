@@ -1,13 +1,10 @@
 <view class="page">
 
-  <!-- ==================== 手机号验证遮罩 ==================== -->
-  <view wx:if="{{showPhoneAuth}}" class="phone-auth-overlay">
-    <view class="phone-auth-box">
-      <text class="phone-auth-title">验证手机号</text>
-      <text class="phone-auth-desc">请输入你在公司登记的手机号进行验证</text>
-      <input class="phone-auth-input" placeholder="输入手机号" maxlength="11" type="number" value="{{phoneInput}}" bindinput="onPhoneAuthInput" />
-      <button class="phone-auth-btn" bindtap="submitPhoneAuth">验证</button>
-    </view>
+  <!-- ==================== 个人模式提示条 ==================== -->
+  <view wx:if="{{showOwnScopeHint}}" class="scope-hint">
+    <text class="scope-hint-icon">👤</text>
+    <text class="scope-hint-text">当前仅显示你添加的记录 · </text>
+    <text class="scope-hint-link" bindtap="goToSettings">联系管理员解锁全部数据 →</text>
   </view>
 
   <!-- ==================== 顶部品牌工具栏 ==================== -->
@@ -46,7 +43,24 @@
     <button class="batch-delete-btn" bindtap="batchDelete">🗑 批量删除</button>
   </view>
 
-  <!-- ==================== 筛选与排序栏（卡片式） ==================== -->
+  <!-- ==================== 骨架屏加载状态 ==================== -->
+  <view wx:if="{{loading && !refreshing}}" class="skeleton-list">
+    <view wx:for="{{[1,2,3]}}" wx:key="*this" class="skeleton-card">
+      <view class="skeleton-line skeleton-avatar"></view>
+      <view class="skeleton-col">
+        <view class="skeleton-line skeleton-name"></view>
+        <view class="skeleton-line skeleton-sub"></view>
+      </view>
+      <view class="skeleton-line skeleton-phone"></view>
+      <view class="skeleton-line skeleton-loc"></view>
+    </view>
+  </view>
+
+  <!-- ==================== 列表内容（含筛选区，整体滚动） ==================== -->
+  <scroll-view wx:else scroll-y class="list-scroll" refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh" scroll-into-view="{{scrollToView}}" scroll-with-animation="{{true}}" bindscroll="onScroll">
+
+    <!-- ===== 筛选与排序栏 ===== -->
+    <view id="filter-top-anchor"></view>
     <view class="filter-section">
 
       <view class="filter-card">
@@ -58,7 +72,7 @@
           <view
             wx:for="{{tagOptions}}"
             wx:key="*this"
-            class="filter-tag {{selectedTag === (index === 0 ? '' : (index === 1 ? 'blacklist' : 'quality')) ? 'active' : ''}}"
+            class="filter-tag {{selectedTag === (index === 0 ? '' : (index === 1 ? 'blacklist' : (index === 2 ? 'quality' : 'hired'))) ? 'active' : ''}}"
             data-index="{{index}}"
             bindtap="onTagSelect"
           >{{item}}</view>
@@ -153,6 +167,50 @@
         />
       </view>
 
+      <!-- ===== 年龄范围筛选 ===== -->
+      <view class="filter-card">
+        <view class="filter-card-header">
+          <text class="filter-card-icon">🎂</text>
+          <text class="filter-card-title">年龄范围</text>
+          <text wx:if="{{selectedAgeMin || selectedAgeMax}}" class="filter-card-selected">{{selectedAgeMin || '0'}} - {{selectedAgeMax || '不限'}} 岁</text>
+        </view>
+        <view class="age-range-row">
+          <input
+            class="age-input"
+            placeholder="最小年龄"
+            type="number"
+            value="{{selectedAgeMin}}"
+            bindinput="onAgeMinInput"
+          />
+          <text class="age-separator">-</text>
+          <input
+            class="age-input"
+            placeholder="最大年龄"
+            type="number"
+            value="{{selectedAgeMax}}"
+            bindinput="onAgeMaxInput"
+          />
+        </view>
+      </view>
+
+      <!-- ===== 卖场经验筛选 ===== -->
+      <view wx:if="{{allKaTags.length > 0}}" class="filter-card">
+        <view class="filter-card-header">
+          <text class="filter-card-icon">🏪</text>
+          <text class="filter-card-title">卖场经验</text>
+          <text wx:if="{{selectedKaTags.length > 0}}" class="filter-card-selected">已选 {{selectedKaTags.length}} 项</text>
+        </view>
+        <scroll-view class="tag-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+          <view
+            wx:for="{{allKaTags}}"
+            wx:key="*this"
+            class="filter-tag {{selectedKaTags.indexOf(item) !== -1 ? 'active' : ''}}"
+            data-tag="{{item}}"
+            bindtap="onKaTagSelect"
+          >{{item}}</view>
+        </scroll-view>
+      </view>
+
       <view class="filter-card">
         <view class="filter-card-header">
           <text class="filter-card-icon">📊</text>
@@ -170,23 +228,22 @@
         </scroll-view>
       </view>
 
-    </view>
-
-  <!-- ==================== 骨架屏加载状态 ==================== -->
-  <view wx:if="{{loading && !refreshing}}" class="skeleton-list">
-    <view wx:for="{{[1,2,3]}}" wx:key="*this" class="skeleton-card">
-      <view class="skeleton-line skeleton-avatar"></view>
-      <view class="skeleton-col">
-        <view class="skeleton-line skeleton-name"></view>
-        <view class="skeleton-line skeleton-sub"></view>
+      <!-- ===== 搜索结果计数 ===== -->
+      <view wx:if="{{!loading && allData.length > 0}}" class="filter-result-info">
+        <text class="filter-result-text">共 <text class="filter-result-num">{{resultCount}}</text> 条结果</text>
       </view>
-      <view class="skeleton-line skeleton-phone"></view>
-      <view class="skeleton-line skeleton-loc"></view>
-    </view>
-  </view>
 
-  <!-- ==================== 列表内容 ==================== -->
-  <scroll-view wx:else scroll-y class="list-scroll" refresher-enabled refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
+      <!-- ===== 搜索按钮 ===== -->
+      <view class="filter-search-btn-wrap">
+        <view class="filter-search-btn" bindtap="doSearch" hover-class="search-btn-hover">
+          <text wx:if="{{searching}}">⏳ 搜索中...</text>
+          <text wx:else>🔍 立即搜索</text>
+        </view>
+      </view>
+
+    </view>
+
+    <view id="result-anchor"></view>
 
     <view wx:for="{{groupedData}}" wx:key="province" class="group slide-up">
 
@@ -214,9 +271,11 @@
                 <text wx:if="{{sub.blacklisted}}" class="card-badge badge-black">⚫ 黑名单</text>
                 <text wx:elif="{{sub.quality}}" class="card-badge badge-quality">⭐ 优质</text>
                 <text wx:if="{{sub.hired}}" class="card-badge badge-active">✅ 合作中</text>
+                <text wx:if="{{sub.hired && sub.hireEndDate}}" class="card-badge badge-expire">⏰ 至 {{sub.hireEndDate}}</text>
                 <text wx:elif="{{sub._hireStatus === 'hired_before'}}" class="card-badge badge-hired">已聘用过</text>
                 <text wx:if="{{sub.healthCert && sub.healthCert.status === 'approved'}}" class="card-badge badge-approved">✅ 健康证</text>
                 <text wx:elif="{{sub.healthCert && sub.healthCert.status === 'pending'}}" class="card-badge badge-pending">⏳ 健康证</text>
+                <text wx:if="{{sub.age}}" class="card-badge badge-age">🎂 {{sub.age}}岁</text>
                 <text class="card-city-tag">📍{{sub.city}}</text>
                 <text class="card-sn-inline">#{{sub.sn}}</text>
               </view>
@@ -251,6 +310,10 @@
 
           <view wx:if="{{sub._detailTags && sub._detailTags.length > 0}}" class="profile-summary">
             <text wx:for="{{sub._detailTags}}" wx:key="*this" class="profile-chip">{{item}}</text>
+          </view>
+
+          <view wx:if="{{sub.hired && sub.hireStartDate && sub.hireEndDate}}" class="hire-period-info">
+            <text class="hire-period-text">📅 聘用期：{{sub.hireStartDate}} ~ {{sub.hireEndDate}}</text>
           </view>
 
           <view wx:if="{{sub.recorderNickname}}" class="recorder-info">
@@ -299,6 +362,18 @@
             data-id="{{sub.id}}"
             bindtap="toggleCommentInput"
           >💬 评论{{sub.comments.length ? ' (' + sub.comments.length + ')' : ''}}</button>
+          <button
+            wx:if="{{!sub.hired}}"
+            class="action-btn btn-hire"
+            data-id="{{sub.id}}"
+            bindtap="openHireModal"
+          >✅ 聘用</button>
+          <button
+            wx:if="{{sub.hired}}"
+            class="action-btn btn-unhire"
+            data-id="{{sub.id}}"
+            bindtap="openUnhireModal"
+          >⏹️ 解聘</button>
         </view>
 
         <!-- ===== 编辑/删除行 ===== -->
@@ -370,6 +445,82 @@
     </view>
 
   </scroll-view>
+
+  <!-- ===== 回到顶部按钮 ===== -->
+  <view
+    class="back-to-top {{showBackTop ? 'visible' : ''}}"
+    bindtap="goToTop"
+    hover-class="back-to-top-hover"
+  >⬆</view>
+
+  <!-- ==================== 聘用弹窗（选择时间区段）==================== -->
+  <view wx:if="{{hireModal}}" class="hire-overlay">
+    <view class="hire-modal">
+      <view class="hire-header">
+        <text class="hire-title">📅 选择聘用时间</text>
+        <text class="hire-close" bindtap="closeHireModal">✕</text>
+      </view>
+      <view class="hire-body">
+        <view class="hire-name">{{hireRecord ? hireRecord.name : ''}}</view>
+        <text class="hire-desc">请选择该促销员的聘用起止日期：</text>
+
+        <view class="hire-date-row">
+          <view class="hire-date-group">
+            <text class="hire-date-label">起始日期</text>
+            <picker
+              mode="date"
+              value="{{hireStartDate}}"
+              start="{{todayDate}}"
+              bindchange="onHireStartDateChange"
+            >
+              <view class="hire-date-value">{{hireStartDate}}</view>
+            </picker>
+          </view>
+          <text class="hire-date-arrow">→</text>
+          <view class="hire-date-group">
+            <text class="hire-date-label">结束日期</text>
+            <picker
+              mode="date"
+              value="{{hireEndDate}}"
+              start="{{hireStartDate}}"
+              bindchange="onHireEndDateChange"
+            >
+              <view class="hire-date-value">{{hireEndDate}}</view>
+            </picker>
+          </view>
+        </view>
+
+        <view class="hire-tips">
+          <text class="hire-tip-icon">💡</text>
+          <text class="hire-tip-text">聘用到期后系统将自动恢复为空闲状态</text>
+        </view>
+
+        <view class="hire-actions">
+          <button class="hire-btn btn-hire-confirm" bindtap="confirmHire">✅ 确认聘用</button>
+          <button class="hire-btn btn-hire-cancel" bindtap="closeHireModal">取消</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ==================== 解聘弹窗 ==================== -->
+  <view wx:if="{{unhireModal}}" class="unhire-overlay">
+    <view class="review-modal">
+      <view class="review-header">
+        <text class="review-title">解聘评价</text>
+        <text class="review-close" bindtap="closeUnhireModal">✕</text>
+      </view>
+      <view class="review-body">
+        <view class="review-name">{{unhireRecord ? unhireRecord.name : ''}}</view>
+        <text class="unhire-desc">请填写解聘评价（必填）：</text>
+        <textarea class="unhire-textarea" placeholder="解聘原因、工作表现等" value="{{unhireComment}}" bindinput="onUnhireCommentInput" auto-height maxlength="-1" />
+        <view class="review-actions">
+          <button class="review-btn btn-approve" bindtap="confirmUnhire">确认解聘</button>
+          <button class="review-btn btn-reject" bindtap="closeUnhireModal">取消</button>
+        </view>
+      </view>
+    </view>
+  </view>
 
   <!-- ==================== 健康证审核弹窗 ==================== -->
   <view wx:if="{{reviewModal}}" class="review-overlay" bindtap="closeReview">

@@ -41,6 +41,7 @@
                 <text wx:elif="{{sub._hireStatus === 'hired_before'}}" class="card-badge badge-hired">已聘用过</text>
                 <text wx:if="{{sub.healthCert && sub.healthCert.status === 'approved'}}" class="card-badge badge-approved">✅ 健康证</text>
                 <text wx:elif="{{sub.healthCert && sub.healthCert.status === 'pending'}}" class="card-badge badge-pending">⏳ 健康证</text>
+                <text wx:if="{{sub.age}}" class="card-badge badge-age">🎂 {{sub.age}}岁</text>
                 <text class="card-city-tag">📍{{sub.city}}</text>
                 <text class="card-sn-inline">#{{sub.sn}}</text>
               </view>

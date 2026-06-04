@@ -2,10 +2,10 @@
 
   <!-- ==================== 顶部品牌区 ==================== -->
   <view class="hero">
-    <view class="hero-bg-pattern"></view>
+    <image class="hero-bg-img" src="/images/company-bg.png" mode="aspectFill" />
+    <view class="hero-overlay"></view>
     <view class="hero-content">
       <view class="hero-brand">
-        <image class="hero-logo" src="/images/logo.png" mode="aspectFit" />
         <view class="hero-text-group">
           <text class="hero-title">促销信息共享</text>
           <text class="hero-desc">高效管理 · 智能协作</text>
@@ -16,37 +16,32 @@
         <text class="hero-export-text">导出</text>
       </view>
     </view>
-    <view class="hero-wave">
-      <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
-        <path d="M0,50 C360,100 1080,0 1440,50 L1440,100 L0,100 Z" fill="#f5f5f5"/>
-      </svg>
-    </view>
   </view>
 
   <!-- ==================== 数据概览 ==================== -->
   <view class="stats-row">
-    <view class="stat-card stat-card-total">
+    <view class="stat-card stat-card-total" bindtap="goToAllPromoters" hover-class="none">
       <view class="stat-card-content">
         <text class="stat-icon">👥</text>
         <text class="stat-value">{{stats.total}}</text>
         <text class="stat-label">促销员</text>
       </view>
     </view>
-    <view class="stat-card stat-card-hired">
+    <view class="stat-card stat-card-hired" bindtap="goToHired" hover-class="none">
       <view class="stat-card-content">
         <text class="stat-icon">✅</text>
         <text class="stat-value">{{stats.hired}}</text>
         <text class="stat-label">在岗</text>
       </view>
     </view>
-    <view class="stat-card stat-card-quality">
+    <view class="stat-card stat-card-quality" bindtap="goToQuality" hover-class="none">
       <view class="stat-card-content">
         <text class="stat-icon">⭐</text>
         <text class="stat-value">{{stats.quality}}</text>
         <text class="stat-label">优质</text>
       </view>
     </view>
-    <view class="stat-card stat-card-provinces">
+    <view class="stat-card stat-card-provinces" bindtap="goToAllPromoters" hover-class="none">
       <view class="stat-card-content">
         <text class="stat-icon">📍</text>
         <text class="stat-value">{{stats.provinces}}</text>
@@ -142,18 +137,16 @@
     </view>
   </view>
 
-  <!-- ==================== 权限验证门 ==================== -->
+  <!-- ==================== 权限提示 ==================== -->
   <view class="auth-gate" wx:if="{{authChecked && !authorized}}">
     <view class="auth-gate-card">
-      <view class="auth-gate-icon">🔒</view>
-      <text class="auth-gate-title">访问受限</text>
-      <text class="auth-gate-desc">此小程序为内部管理工具，您暂无访问权限。</text>
-      <text class="auth-gate-hint">请联系您的团队管理员开通账号后使用。</text>
+      <view class="auth-gate-icon">👤</view>
+      <text class="auth-gate-title">个人模式</text>
+      <text class="auth-gate-desc">当前仅显示你添加的记录，管理员将你的手机号加入白名单后可查看全部数据。</text>
       <view class="auth-gate-divider"></view>
       <view class="auth-gate-contact">
-        <text class="auth-gate-contact-label">管理员操作指引：</text>
-        <text class="auth-gate-contact-step">1. 在"设置"页添加您的手机号到白名单</text>
-        <text class="auth-gate-contact-step">2. 重新打开小程序即可正常使用</text>
+        <text class="auth-gate-contact-step">📱 在"设置"页填写手机号申请加入白名单</text>
+        <text class="auth-gate-contact-step">🔓 解锁后可查看团队全部数据</text>
       </view>
     </view>
   </view>

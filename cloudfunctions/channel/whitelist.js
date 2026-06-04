@@ -23,10 +23,17 @@ async function whitelistCheck(openid, data) {
   if (!phone) return { success: false, message: '请输入手机号' };
 
   try {
-    // 查一下白名单集合
-    const wlCount = await db.collection('whitelist').count();
+    // 查一下白名单集合（如果集合不存在，count 返回 0）
+    let total = 0;
+    try {
+      const wlCount = await db.collection('whitelist').count();
+      total = wlCount.total;
+    } catch (e) {
+      // 集合不存在时视为空集合
+      total = 0;
+    }
     // 如果白名单还没配置（空集合）→ 提示联系管理员
-    if (wlCount.total === 0) {
+    if (total === 0) {
       return { success: false, message: '系统尚未配置白名单，请联系管理员' };
     }
     // 查这个手机号是否在白名单中
@@ -52,6 +59,7 @@ async function whitelistCheck(openid, data) {
 // ============================================================
 // whitelistAdd：管理员添加手机号到白名单（支持批量）
 // data：{ phones: ['138xxx', '139xxx'] }
+// 流程：直接尝试写入，不怕集合不存在和重复
 // ============================================================
 async function whitelistAdd(adminOpenid, data) {
   // 检查调用者是不是管理员
@@ -63,23 +71,30 @@ async function whitelistAdd(adminOpenid, data) {
 
   // 逐个添加
   let added = 0;
+  const errors = [];
   for (const phone of phones) {
     const trimmed = phone.trim();
     if (!trimmed) continue;
     try {
-      // 检查是否已存在（避免重复添加）
-      const existing = await db.collection('whitelist').where({ phone: trimmed }).get();
-      if (existing.data.length === 0) {
-        await db.collection('whitelist').add({
-          data: { phone: trimmed, addedBy: adminOpenid, createdAt: Date.now() },
-        });
-        added++;
-      }
+      // 直接尝试写入（微信云数据库：集合不存在时，add 会自动创建集合）
+      // 用 phone 作为唯一标识，避免重复
+      await db.collection('whitelist').add({
+        data: { phone: trimmed, addedBy: adminOpenid, createdAt: Date.now() },
+      });
+      added++;
     } catch (e) {
-      // 跳过重复/无效号码
+      // 如果是"记录已存在"类的错误，忽略（不是真错误）
+      if (e.message && e.message.indexOf('duplicate') !== -1) {
+        errors.push(`${trimmed}（已存在）`);
+      } else if (e.message && e.message.indexOf('permission') !== -1) {
+        errors.push(`${trimmed}（数据库权限不足，请去云开发控制台创建 whitelist 集合）`);
+      } else {
+        console.error(`whitelistAdd error for ${trimmed}:`, e);
+        errors.push(`${trimmed}（${e.message}）`);
+      }
     }
   }
-  return { success: true, added, total: phones.length };
+  return { success: true, added, total: phones.length, errors: errors.length > 0 ? errors : undefined };
 }
 
 // ============================================================

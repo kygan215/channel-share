@@ -92,6 +92,21 @@ async function checkWhitelist(phone) {
   }
 }
 
+// verifyMyWhitelist：当前用户主动验证自己的白名单身份
+// phone：当前用户的手机号
+// 如果验证通过，下一次 checkAuth 就能拿到 viewer 角色，看到全部数据
+async function verifyMyWhitelist(phone) {
+  try {
+    const res = await wx.cloud.callFunction({
+      name: 'channel',
+      data: { action: 'whitelistCheck', data: { phone } },
+    });
+    return res.result || { success: false, message: '验证失败' };
+  } catch (err) {
+    return { success: false, message: '网络错误' };
+  }
+}
+
 // getSettings：读取本地的功能开关设置
 // 返回：{ canAdd（能否新增）, canEdit（能否修改）, canDelete（能否删除）, canPromoter（能否聘用）, canReview（能否审核） }
 function getSettings() {
@@ -195,13 +210,20 @@ function getHealthCertText(healthCert) {
 
 // getLatestHireInfo：获取最近一次聘用信息
 // item：促销员记录，hireHistory：聘用历史数组
-// 返回：{ hiredBy（谁聘的）, hiredAt（聘用日期）, unhireAt（解聘日期）, comment（评价） }
+// 返回：{ hiredBy（谁聘的）, hiredAt（聘用日期）, hireStartDate, hireEndDate, unhireAt（解聘日期）, comment（评价） }
 function getLatestHireInfo(item, hireHistory) {
   // 取聘用历史最后一条（最新的一条）
   const latest = hireHistory.length ? hireHistory[hireHistory.length - 1] : {};
+
+  // 优先取 hireStartDate/hireEndDate（新版时间区段字段）
+  const hireStartDate = item.hireStartDate || latest.hireStartDate || '';
+  const hireEndDate = item.hireEndDate || latest.hireEndDate || '';
+
   return {
     hiredBy: item.hiredBy || latest.hiredBy || '',
     hiredAt: item.hiredAt || latest.hiredAt || '',
+    hireStartDate,
+    hireEndDate,
     unhireAt: latest.unhireAt || '',
     comment: latest.comment || '',
   };
@@ -231,7 +253,8 @@ function processData(options) {
   const {
     allData, searchText,
     selectedProvince, selectedCity, selectedDistrict, selectedStreet,
-    selectedTag,
+    selectedTag, selectedHired,
+    selectedAgeMin, selectedAgeMax, selectedKaTags,
     sortIndex, sortOptions,
     currentUserId,
   } = options;
@@ -288,7 +311,32 @@ function processData(options) {
     filtered = filtered.filter((item) => item.quality);
   }
 
-  // ── 第四步：排序 ──
+  // ── 第四步：按在岗状态筛选 ──
+  if (selectedHired) {
+    filtered = filtered.filter((item) => item.hired);
+  }
+
+  // ── 第五步：按年龄范围筛选 ──
+  if (selectedAgeMin || selectedAgeMax) {
+    const min = Number(selectedAgeMin) || 0;
+    const max = Number(selectedAgeMax) || 999;
+    filtered = filtered.filter((item) => {
+      const age = Number(item.age);
+      if (!age) return false; // 没有年龄则不显示
+      return age >= min && age <= max;
+    });
+  }
+
+  // ── 第六步：按卖场经验（kaTags）筛选 ──
+  if (selectedKaTags && selectedKaTags.length > 0) {
+    filtered = filtered.filter((item) => {
+      const tags = normalizeTags(item.kaTags);
+      // 要求所有选中的标签都在该记录的 kaTags 中（多选交集）
+      return selectedKaTags.every((t) => tags.includes(t));
+    });
+  }
+
+  // ── 第七步：排序 ──
   const sortMode = sortOptions[sortIndex]; // 获取当前选择的排序方式
   if (sortMode === '序号降序') {
     // 按序号从大到小
@@ -298,7 +346,7 @@ function processData(options) {
     filtered.sort((a, b) => (a.sn || 0) - (b.sn || 0));
   }
 
-  // ── 第五步：给每条记录附加展示字段 ──
+  // ── 第八步：给每条记录附加展示字段 ──
   filtered = filtered.map((item) => {
     const hireHistory = Array.isArray(item.hireHistory) ? item.hireHistory : [];
     const hasComments = (item.comments || []).length > 0;           // 有没有评论
@@ -332,6 +380,7 @@ function processData(options) {
       hireHistory: hireHistory.map((h) => ({
         ...h, id: h.id || 0,
         hiredBy: h.hiredBy || '未知', hiredAt: h.hiredAt || '',
+        hireStartDate: h.hireStartDate || '', hireEndDate: h.hireEndDate || '',
         comment: h.comment || '', unhireAt: h.unhireAt || '', unhireBy: h.unhireBy || '',
       })),
       comments: (item.comments || []).map((c) => ({
@@ -435,7 +484,7 @@ function exportToCSV(groupedData) {
 //   const { getAllChannels, processData } = require('../../utils/channel-service');
 module.exports = {
   // API 调用
-  getAllChannels, checkAuth, checkWhitelist, getSettings,
+  getAllChannels, checkAuth, checkWhitelist, verifyMyWhitelist, getSettings,
   // 用户信息
   getUserId, buildHireByIdentity, getMyNickname, getMyOpenid,
   // 数据格式化

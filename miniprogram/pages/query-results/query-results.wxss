@@ -145,6 +145,12 @@
   font-weight: 600;
 }
 
+.card-badge.badge-expire {
+  background: #e8f4fd;
+  color: #3b7cff;
+  font-weight: 600;
+}
+
 .card-badge.badge-approved {
   background: #e6f9ed;
   color: #07c160;
@@ -166,6 +172,12 @@
 .card-badge.badge-quality {
   background: #fff7e6;
   color: #ff6a00;
+  font-weight: 600;
+}
+
+.card-badge.badge-age {
+  background: #fef4e8;
+  color: #c0392b;
   font-weight: 600;
 }
 

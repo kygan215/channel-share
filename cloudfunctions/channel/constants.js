@@ -66,7 +66,6 @@ const publicActions = [
 // 各操作允许的角色
 // 没有列出的操作默认只允许 admin
 const actionPermissions = {
-  list:             ['admin', 'viewer'],  // 查看列表：管理员和查看者都可以
   getRecord:        ['admin', 'viewer'],  // 查看详情：管理员和查看者都可以
   exportExcel:      ['admin'],            // 导出Excel：仅管理员
   batchAdd:         ['admin'],            // 批量导入：仅管理员
